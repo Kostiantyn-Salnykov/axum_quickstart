@@ -1,6 +1,6 @@
-use crate::seaorm::entities::users;
-use crate::seaorm::entities::users::{ActiveModel, Entity as UserEntity};
-use crate::seaorm::mappers::user::UserRow;
+use crate::orm::entities::users;
+use crate::orm::entities::users::{ActiveModel, Entity as UserEntity};
+use crate::orm::mappers::user::UserRow;
 use async_trait::async_trait;
 use chrono::Utc;
 use domain::entities::user::user::User;

@@ -8,6 +8,9 @@ pub enum AppError {
     #[error("Validation failed: {0}")]
     Validation(String),
 
+    #[error("Conflict: {0}")]
+    Conflict(String),
+
     #[error("Unauthorized")]
     Unauthorized,
 

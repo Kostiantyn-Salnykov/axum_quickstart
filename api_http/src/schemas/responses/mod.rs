@@ -4,6 +4,7 @@ use serde::Serialize;
 mod errors;
 pub(crate) mod health_check;
 pub(crate) mod helpers;
+pub(crate) mod users;
 
 #[derive(Serialize)]
 pub struct JsendResponse<T: Serialize> {

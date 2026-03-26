@@ -14,6 +14,7 @@ impl IntoResponse for AppError {
                 JsendStatus::Fail,
                 msg.clone(),
             ),
+            AppError::Conflict(msg) => (StatusCode::CONFLICT, JsendStatus::Fail, msg.clone()),
             AppError::Unauthorized => (
                 StatusCode::UNAUTHORIZED,
                 JsendStatus::Error,

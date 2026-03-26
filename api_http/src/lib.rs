@@ -1,5 +1,8 @@
 use axum::http::HeaderName;
-use axum::{Router, http, routing::get};
+use axum::{
+    Router, http,
+    routing::{get, post},
+};
 use tower::ServiceBuilder;
 use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
@@ -14,6 +17,7 @@ pub mod state;
 
 use crate::middlewares::request_id::MakeRequestUuid;
 use handlers::health_check::health_check;
+use handlers::users::register_user;
 use state::AppState;
 
 const REQUEST_ID_HEADER: &str = "x-request-id";
@@ -23,6 +27,7 @@ pub fn create_router(state: AppState) -> Router {
 
     Router::new()
         .route("/health_check/", get(health_check))
+        .route("/users/register/", post(register_user))
         .layer(
             ServiceBuilder::new()
                 .layer(SetRequestIdLayer::new(

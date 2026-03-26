@@ -1,4 +1,4 @@
-pub(crate) use crate::seaorm::entities::users::Model as UserRow;
+pub(crate) use crate::orm::entities::users::Model as UserRow;
 use domain::entities::user::email::Email;
 use domain::entities::user::password_hash::PasswordHash;
 use domain::entities::user::provider::AuthProvider;

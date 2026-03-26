@@ -1,2 +1,2 @@
 pub mod entities;
-mod errors;
+pub mod errors;

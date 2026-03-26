@@ -3,6 +3,7 @@ use argon2::{
     password_hash::{PasswordHasher, PasswordVerifier},
 };
 use password_hash::phc::PasswordHash;
+use service::{errors::ServiceError, ports::user::PasswordHasher as PasswordHasherPort};
 
 pub struct ArgonPasswordHasher;
 
@@ -17,5 +18,15 @@ impl ArgonPasswordHasher {
         Ok(Argon2::default()
             .verify_password(password.as_bytes(), &parsed)
             .is_ok())
+    }
+}
+
+impl PasswordHasherPort for ArgonPasswordHasher {
+    fn hash(&self, plaintext: &str) -> Result<String, ServiceError> {
+        Self::hash(plaintext).map_err(|_| ServiceError::Internal)
+    }
+
+    fn verify(&self, plaintext: &str, hash: &str) -> Result<bool, ServiceError> {
+        Self::verify(plaintext, hash).map_err(|_| ServiceError::Internal)
     }
 }
