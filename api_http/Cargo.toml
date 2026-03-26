@@ -1,0 +1,15 @@
+[package]
+name = "api_http"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = { version = "0.8.8",features = ["tracing", "tokio", "tower-log"] }
+serde = { version = "1.0.228", features = ["derive"] }
+service = { path = "../service" }
+thiserror = "2.0.18"
+anyhow = "1.0.102"
+tower-http = { version = "0.6.8",features = ["trace", "request-id", "util", "uuid"] }
+uuid = {version = "1.22.0", features = ["v4", "v7", "v8"]}
+tower = { version = "0.5.3", features = [] }
+tracing = "0.1.44"

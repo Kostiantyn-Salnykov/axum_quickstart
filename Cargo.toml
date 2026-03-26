@@ -1,0 +1,4 @@
+[workspace]
+members = ["app", "api_http", "domain", "infrastructure", "service", "infrastructure/migrations"]
+resolver = "2"
+default-members = ["app"]

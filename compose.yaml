@@ -1,0 +1,90 @@
+volumes:
+  db_data:
+    name: "axum_quickstart-PostgreSQL-DATA"
+  pgadmin_data:
+    name: "axum_quickstart-PGAdmin-DATA"
+  redis_data:
+    name: "axum_quickstart-Redis-DATA"
+
+
+services:
+  postgresql:
+    container_name: "axum_quickstart-PostgreSQL"
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - "db_data:/var/lib/postgresql"
+    env_file:
+      - .env
+    ports:
+      - "0.0.0.0:${POSTGRES_PORT}:${POSTGRES_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER} -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}"]
+      start_period: 30s
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    container_name: "axum_quickstart-PGAdmin"
+    image: elestio/pgadmin
+    restart: unless-stopped
+    volumes:
+      - "pgadmin_data:/var/lib/pgadmin"
+    env_file:
+      - .env
+    ports:
+      - "0.0.0.0:${PGADMIN_LISTEN_PORT}:${PGADMIN_LISTEN_PORT}"
+    depends_on:
+      - postgresql
+
+  redis:
+    container_name: "axum_quickstart-RedisStack"
+    image: redis/redis-stack
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "0.0.0.0:${REDIS_PORT}:${REDIS_PORT}"  # Redis Server
+      - "0.0.0.0:${REDIS_INSIGHT_PORT}:${REDIS_INSIGHT_PORT}"  # RedisInsight
+    volumes:
+      - "redis_data:/data"
+      - "./redis/redis.conf:/redis-stack.conf"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      start_period: 30s
+      interval: 10s
+      timeout: 2s
+      retries: 3
+
+  backend:
+    container_name: "axum_quickstart-Axum"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - "0.0.0.0:${SERVER_PORT}:${SERVER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - postgresql
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://0.0.0.0:${SERVER_PORT}/api/v1/ || exit 1"]
+      start_period: 10s
+      interval: 30s
+      timeout: 2s
+      retries: 3
+    develop:
+      watch:
+        - action: "sync"
+          path: "./"
+          target: "/backend"
+        - action: "sync+restart"
+          path: "./.env"
+          target: "/backend/.env"
+        - action: "sync+restart"
+          path: "./settings.py"
+          target: "/backend/settings.py"

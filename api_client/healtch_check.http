@@ -1,0 +1,2 @@
+GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/health_check/
+Accept: application/json

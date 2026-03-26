@@ -1,0 +1,12 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+api_http = { path = "../api_http"}
+service = { path = "../service" }
+infrastructure = { path = "../infrastructure" }
+tokio = { version = "1", features = ["full"] }
+axum = "0.8.8"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

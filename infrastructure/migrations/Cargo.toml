@@ -1,0 +1,20 @@
+[package]
+name = "migrations"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+name = "migrations"
+path = "src/lib.rs"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+dotenvy = "0.15.7"
+infrastructure = { path = ".." }
+
+[dependencies.sea-orm-migration]
+version = "1.1.0"
+features = [
+    "runtime-tokio-rustls", "sqlx-postgres"
+]
