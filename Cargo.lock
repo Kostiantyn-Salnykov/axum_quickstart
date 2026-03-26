@@ -1494,6 +1494,7 @@ version = "0.1.0"
 dependencies = [
  "argon2",
  "async-trait",
+ "chrono",
  "domain",
  "dotenvy",
  "envy",
@@ -1502,7 +1503,6 @@ dependencies = [
  "sea-orm-migration 2.0.0-rc.37",
  "serde",
  "service",
- "time",
  "uuid",
 ]
 

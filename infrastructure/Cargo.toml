@@ -15,4 +15,4 @@ async-trait = "0.1.89"
 argon2 = "0.6.0-rc.8"
 password-hash = "0.6.0"
 uuid = { version = "1.22.0", features = ["v4"] }
-time = "0.3.47"
+chrono = "0.4.44"

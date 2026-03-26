@@ -1,2 +1,2 @@
 pub mod health_check;
-mod user;
+pub mod user;
