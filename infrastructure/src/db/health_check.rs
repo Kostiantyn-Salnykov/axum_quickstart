@@ -25,12 +25,16 @@ impl HealthCheckProvider for DbHealthCheckProvider {
             .db
             .query_one_raw(stmt)
             .await
-            .map_err(|e| ServiceError::Infrastructure(e.to_string()))?
-            .ok_or_else(|| ServiceError::Infrastructure("no row returned!".to_string()))?;
+            .map_err(|e| {
+                tracing::error!(error = %e, "Failed to return CURRENT_TIMESTAMP.");
+                ServiceError::Internal
+            })?
+            .ok_or_else(|| ServiceError::Internal)?;
 
-        let ts: String = row
-            .try_get("", "current_timestamp")
-            .map_err(|e| ServiceError::Infrastructure(e.to_string()))?;
+        let ts: String = row.try_get("", "current_timestamp").map_err(|e| {
+            tracing::error!(error = %e, "Cannot retrieve `current_timestamp` from query result.");
+            ServiceError::Internal
+        })?;
 
         Ok(ts)
     }

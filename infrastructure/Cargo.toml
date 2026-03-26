@@ -7,7 +7,6 @@ edition = "2024"
 domain = {path = "../domain"}
 service = {path = "../service"}
 sea-orm = { version = "2.0.0-rc", features = [ "sqlx-postgres", "runtime-tokio-rustls", "debug-print", "with-uuid", "with-json", "with-chrono", "with-bigdecimal", "macros" ] }
-sea-orm-migration = {version = "2.0.0-rc.37", features = ["sqlx-postgres", "runtime-tokio-rustls"]}
 dotenvy = "0.15.7"
 serde = { version = "1.0.228", features = ["derive"] }
 envy = "0.4.2"
@@ -16,3 +15,4 @@ argon2 = "0.6.0-rc.8"
 password-hash = "0.6.0"
 uuid = { version = "1.22.0", features = ["v4"] }
 chrono = "0.4.44"
+tracing = "0.1.44"

@@ -8,7 +8,7 @@ use axum::response::IntoResponse;
 
 pub async fn health_check(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
     let result = state
-        .health_check_service
+        .health_check
         .check()
         .await
         .map_err(|e| AppError::Internal(anyhow::anyhow!(e)))?;

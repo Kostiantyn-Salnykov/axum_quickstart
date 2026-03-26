@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use service::services::health_check::HealthCheckService;
+use service::use_cases::health_check::HealthCheckUseCase;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub health_check_service: Arc<HealthCheckService>,
+    pub health_check: Arc<dyn HealthCheckUseCase>,
 }

@@ -2,11 +2,12 @@ use std::sync::Arc;
 
 use infrastructure::{db::connection::connect_db, settings::Settings};
 use service::services::health_check::HealthCheckService;
+use service::use_cases::health_check::HealthCheckUseCase;
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use api_http::{create_router, state::AppState};
-use infrastructure::repositories::health_check::DbHealthCheckProvider;
+use infrastructure::db::health_check::DbHealthCheckProvider;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -19,11 +20,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let db = connect_db(&settings).await?;
 
     let provider = Arc::new(DbHealthCheckProvider::new(db));
-    let health_check_service = Arc::new(HealthCheckService::new(provider));
+    let health_check: Arc<dyn HealthCheckUseCase> = Arc::new(HealthCheckService::new(provider));
 
-    let state = AppState {
-        health_check_service,
-    };
+    let state = AppState { health_check };
 
     let app = create_router(state);
 

@@ -1,5 +1,4 @@
-use crate::seaorm::entities::users::Model as UserRow;
-use chrono::Utc;
+pub(crate) use crate::seaorm::entities::users::Model as UserRow;
 use domain::entities::user::email::Email;
 use domain::entities::user::password_hash::PasswordHash;
 use domain::entities::user::provider::AuthProvider;
@@ -15,8 +14,15 @@ impl TryFrom<UserRow> for User {
             id: row.id,
             first_name: row.first_name,
             last_name: row.last_name,
-            email: Email::new(&row.email)
-                .map_err(|e| ServiceError::Infrastructure(e.to_string()))?,
+            email: Email::new(&row.email).map_err(|e| {
+                tracing::error!(
+                    error = %e,
+                    user_id = %row.id,
+                    email = %row.email,
+                    "Failed to map user row: invalid email"
+                );
+                ServiceError::Internal
+            })?,
             password_hash: row.password_hash.map(PasswordHash::from_hash),
             status: match row.status.as_str() {
                 "Unconfirmed" => UserStatus::Unconfirmed,
@@ -25,9 +31,12 @@ impl TryFrom<UserRow> for User {
                 "ForceChangePassword" => UserStatus::ForceChangePassword,
                 "ExternalProvider" => UserStatus::ExternalProvider,
                 other => {
-                    return Err(ServiceError::Infrastructure(format!(
-                        "unknown status: {other}"
-                    )));
+                    tracing::error!(
+                    user_id = %row.id,
+                    status = %other,
+                    "Failed to map user row: unknown status"
+                    );
+                    return Err(ServiceError::Internal);
                 }
             },
             provider: match row.provider.as_deref() {
@@ -35,14 +44,17 @@ impl TryFrom<UserRow> for User {
                 Some("Meta") => Some(AuthProvider::Meta),
                 Some("GitHub") => Some(AuthProvider::GitHub),
                 Some(other) => {
-                    return Err(ServiceError::Infrastructure(format!(
-                        "unknown provider: {other}"
-                    )));
+                    tracing::error!(
+                        user_id = %row.id,
+                        provider = %other,
+                        "Failed to map user row: unknown provider"
+                    );
+                    return Err(ServiceError::Internal);
                 }
                 None => None,
             },
-            created_at: row.created_at.with_timezone(&Utc),
-            updated_at: row.updated_at.with_timezone(&Utc),
+            created_at: row.created_at.into(),
+            updated_at: row.updated_at.into(),
         })
     }
 }
