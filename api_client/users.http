@@ -1,8 +1,12 @@
+### Check health of DB connection by selecting current timestamp.
+# @name Healthcheck
 GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/health_check/
 Accept: application/json
 
-###
+>>! {{$projectRoot}}/api_client/response/health_check.json
 
+### Create new user.
+# @name Register user
 POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/register/
 Accept: application/json
 Content-Type: application/json
@@ -13,3 +17,5 @@ Content-Type: application/json
   "first_name": "Kostiantyn",
   "last_name": "Salnykov"
 }
+
+>>! {{$projectRoot}}/api_client/response/users/register.json

@@ -1,1 +1,90 @@
-pub use crate::repositories::user::DbUserRepository as SeaOrmUserRepository;
+use crate::orm::entities::prelude::Users as UserEntity;
+use crate::orm::entities::users;
+use crate::orm::entities::users::ActiveModel;
+use crate::orm::mappers::user::UserRow;
+use application::errors::ServiceError;
+use application::users::user_repository::UserRepository;
+use async_trait::async_trait;
+use chrono::Utc;
+use domain::user::user::User;
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use uuid::Uuid;
+
+pub struct SeaOrmUserRepository {
+    db: DatabaseConnection,
+}
+
+impl SeaOrmUserRepository {
+    pub fn new(db: DatabaseConnection) -> Self {
+        Self { db }
+    }
+}
+
+#[async_trait]
+impl UserRepository for SeaOrmUserRepository {
+    async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, ServiceError> {
+        let model = UserEntity::find_by_id(id)
+            .one(&self.db)
+            .await
+            .map_err(|e| {
+                tracing::error!(error = %e, "Failed to find the user by id.");
+                ServiceError::Internal
+            })?;
+
+        model.map(|m| UserRow::from(m).try_into()).transpose()
+    }
+
+    async fn find_by_email(&self, email: &str) -> Result<Option<User>, ServiceError> {
+        let model = UserEntity::find()
+            .filter(users::Column::Email.eq(email))
+            .one(&self.db)
+            .await
+            .map_err(|e| {
+                tracing::error!(error = %e, "Failed to find the user by email.");
+                ServiceError::Internal
+            })?;
+
+        model.map(|m| UserRow::from(m).try_into()).transpose()
+    }
+
+    async fn create(&self, user: &User) -> Result<User, ServiceError> {
+        let now = Utc::now();
+        let active = ActiveModel {
+            id: Set(user.id),
+            first_name: Set(user.first_name.clone()),
+            last_name: Set(user.last_name.clone()),
+            email: Set(user.email.as_str().to_string()),
+            password_hash: Set(user.password_hash.as_ref().map(|h| h.as_str().to_string())),
+            status: Set(format!("{:?}", user.status)),
+            provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
+            created_at: Set(now.into()),
+            updated_at: Set(now.into()),
+        };
+        let model = active.insert(&self.db).await.map_err(|e| {
+            tracing::error!(error = %e, "Failed to create the user.");
+            ServiceError::Internal
+        })?;
+
+        UserRow::from(model).try_into()
+    }
+
+    async fn update(&self, user: &User) -> Result<User, ServiceError> {
+        let active = ActiveModel {
+            id: Set(user.id),
+            first_name: Set(user.first_name.clone()),
+            last_name: Set(user.last_name.clone()),
+            email: Set(user.email.as_str().to_string()),
+            password_hash: Set(user.password_hash.as_ref().map(|h| h.as_str().to_string())),
+            status: Set(format!("{:?}", user.status)),
+            provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
+            updated_at: Set(Utc::now().into()),
+            ..Default::default()
+        };
+        let model = active.update(&self.db).await.map_err(|e| {
+            tracing::error!(error = %e, "Failed to update the user.");
+            ServiceError::Internal
+        })?;
+
+        UserRow::from(model).try_into()
+    }
+}

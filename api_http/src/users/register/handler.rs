@@ -1,5 +1,5 @@
 use crate::errors::AppError;
-use crate::response::JsendResponse;
+use crate::responses::JsendResponse;
 use crate::state::AppState;
 use crate::users::register::request::RegisterUserRequest;
 use crate::users::register::response::RegisterUserResponse;

@@ -1495,7 +1495,6 @@ dependencies = [
  "domain",
  "dotenvy",
  "envy",
- "password-hash",
  "sea-orm",
  "serde",
  "tracing",

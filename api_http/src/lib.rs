@@ -8,12 +8,12 @@ use tracing::Span;
 mod enums;
 mod errors;
 pub mod health_check;
-mod middlewares;
-mod response;
+pub(crate) mod middlewares;
+mod responses;
 pub mod state;
 pub mod users;
 
-use crate::middlewares::request_id::MakeRequestUuid;
+use middlewares::MakeRequestUuid;
 use state::AppState;
 
 const REQUEST_ID_HEADER: &str = "x-request-id";

@@ -1,6 +1,6 @@
 use crate::errors::AppError;
 use crate::health_check::check::response::HealthCheckResponse;
-use crate::response::JsendResponse;
+use crate::responses::JsendResponse;
 use crate::state::AppState;
 use axum::extract::State;
 use axum::http::StatusCode;

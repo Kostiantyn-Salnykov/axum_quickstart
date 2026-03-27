@@ -1,2 +1,3 @@
+pub mod password_hasher;
 pub mod register;
-pub mod shared;
+pub mod user_repository;
