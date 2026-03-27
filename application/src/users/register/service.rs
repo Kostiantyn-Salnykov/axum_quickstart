@@ -67,7 +67,7 @@ impl RegisterUser for RegisterUserService {
         user = self.users.create(&user).await?;
         Ok(RegisterUserResult {
             id: user.id,
-            email: user.email.as_str().to_string(),
+            email: user.email.to_owned(),
             first_name: user.first_name,
             last_name: user.last_name,
             status: format!("{:?}", user.status),

@@ -1,10 +1,13 @@
+use crate::orm::entities::users::ActiveModel;
 pub(crate) use crate::orm::entities::users::Model as UserRow;
 use application::errors::ServiceError;
+use chrono::{DateTime, Utc};
 use domain::user::email::Email;
 use domain::user::password_hash::PasswordHash;
 use domain::user::provider::AuthProvider;
 use domain::user::status::UserStatus;
 use domain::user::user::User;
+use sea_orm::Set;
 
 impl TryFrom<UserRow> for User {
     type Error = ServiceError;
@@ -56,5 +59,33 @@ impl TryFrom<UserRow> for User {
             created_at: row.created_at.into(),
             updated_at: row.updated_at.into(),
         })
+    }
+}
+
+pub(crate) fn to_new_user_active_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
+    ActiveModel {
+        id: Set(user.id),
+        first_name: Set(user.first_name.clone()),
+        last_name: Set(user.last_name.clone()),
+        email: Set(user.email.as_str().to_string()),
+        password_hash: Set(user.password_hash.as_ref().map(PasswordHash::to_owned)),
+        status: Set(user.status.as_str().to_owned()),
+        provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
+        created_at: Set(now.into()),
+        updated_at: Set(now.into()),
+    }
+}
+
+pub(crate) fn to_existing_user_active_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
+    ActiveModel {
+        id: Set(user.id),
+        first_name: Set(user.first_name.clone()),
+        last_name: Set(user.last_name.clone()),
+        email: Set(user.email.as_str().to_string()),
+        password_hash: Set(user.password_hash.as_ref().map(PasswordHash::to_owned)),
+        status: Set(user.status.as_str().to_owned()),
+        provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
+        updated_at: Set(now.into()),
+        ..Default::default()
     }
 }

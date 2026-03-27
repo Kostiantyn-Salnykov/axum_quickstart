@@ -1,13 +1,12 @@
 use crate::orm::entities::prelude::Users as UserEntity;
 use crate::orm::entities::users;
-use crate::orm::entities::users::ActiveModel;
-use crate::orm::mappers::user::UserRow;
+use crate::orm::mappers::user::{UserRow, to_existing_user_active_model, to_new_user_active_model};
 use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use chrono::Utc;
 use domain::user::user::User;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
+use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use uuid::Uuid;
 
 pub struct SeaOrmUserRepository {
@@ -49,18 +48,8 @@ impl UserRepository for SeaOrmUserRepository {
 
     async fn create(&self, user: &User) -> Result<User, ServiceError> {
         let now = Utc::now();
-        let active = ActiveModel {
-            id: Set(user.id),
-            first_name: Set(user.first_name.clone()),
-            last_name: Set(user.last_name.clone()),
-            email: Set(user.email.as_str().to_string()),
-            password_hash: Set(user.password_hash.as_ref().map(|h| h.as_str().to_string())),
-            status: Set(format!("{:?}", user.status)),
-            provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
-            created_at: Set(now.into()),
-            updated_at: Set(now.into()),
-        };
-        let model = active.insert(&self.db).await.map_err(|e| {
+        let active_model = to_new_user_active_model(user, now);
+        let model = active_model.insert(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to create the user.");
             ServiceError::Internal
         })?;
@@ -69,18 +58,8 @@ impl UserRepository for SeaOrmUserRepository {
     }
 
     async fn update(&self, user: &User) -> Result<User, ServiceError> {
-        let active = ActiveModel {
-            id: Set(user.id),
-            first_name: Set(user.first_name.clone()),
-            last_name: Set(user.last_name.clone()),
-            email: Set(user.email.as_str().to_string()),
-            password_hash: Set(user.password_hash.as_ref().map(|h| h.as_str().to_string())),
-            status: Set(format!("{:?}", user.status)),
-            provider: Set(user.provider.as_ref().map(|p| format!("{:?}", p))),
-            updated_at: Set(Utc::now().into()),
-            ..Default::default()
-        };
-        let model = active.update(&self.db).await.map_err(|e| {
+        let active_model = to_existing_user_active_model(user, Utc::now());
+        let model = active_model.update(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to update the user.");
             ServiceError::Internal
         })?;
