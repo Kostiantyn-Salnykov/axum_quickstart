@@ -70,7 +70,7 @@ impl RegisterUser for RegisterUserService {
             email: user.email.to_owned(),
             first_name: user.first_name,
             last_name: user.last_name,
-            status: format!("{:?}", user.status),
+            status: user.status.as_str().to_owned(),
         })
     }
 }

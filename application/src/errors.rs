@@ -1,7 +1,10 @@
 #[derive(Debug, thiserror::Error)]
 pub enum ServiceError {
     #[error("Internal error.")]
-    Internal,
+    Internal {
+        #[source]
+        source: anyhow::Error,
+    },
 
     #[error("Not found")]
     NotFound,
@@ -14,4 +17,12 @@ pub enum ServiceError {
 
     #[error("Validation failed: {0}")]
     Validation(String),
+}
+
+impl ServiceError {
+    pub fn internal(error: impl Into<anyhow::Error>) -> Self {
+        Self::Internal {
+            source: error.into(),
+        }
+    }
 }

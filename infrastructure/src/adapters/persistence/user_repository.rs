@@ -1,6 +1,6 @@
 use crate::orm::entities::prelude::Users as UserEntity;
 use crate::orm::entities::users;
-use crate::orm::mappers::user::{UserRow, to_existing_user_active_model, to_new_user_active_model};
+use crate::orm::mappers::user::{UserRow, to_create_model, to_update_model};
 use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;
@@ -27,7 +27,7 @@ impl UserRepository for SeaOrmUserRepository {
             .await
             .map_err(|e| {
                 tracing::error!(error = %e, "Failed to find the user by id.");
-                ServiceError::Internal
+                ServiceError::internal(e)
             })?;
 
         model.map(|m| UserRow::from(m).try_into()).transpose()
@@ -40,7 +40,7 @@ impl UserRepository for SeaOrmUserRepository {
             .await
             .map_err(|e| {
                 tracing::error!(error = %e, "Failed to find the user by email.");
-                ServiceError::Internal
+                ServiceError::internal(e)
             })?;
 
         model.map(|m| UserRow::from(m).try_into()).transpose()
@@ -48,20 +48,20 @@ impl UserRepository for SeaOrmUserRepository {
 
     async fn create(&self, user: &User) -> Result<User, ServiceError> {
         let now = Utc::now();
-        let active_model = to_new_user_active_model(user, now);
+        let active_model = to_create_model(user, now);
         let model = active_model.insert(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to create the user.");
-            ServiceError::Internal
+            ServiceError::internal(e)
         })?;
 
         UserRow::from(model).try_into()
     }
 
     async fn update(&self, user: &User) -> Result<User, ServiceError> {
-        let active_model = to_existing_user_active_model(user, Utc::now());
+        let active_model = to_update_model(user, Utc::now());
         let model = active_model.update(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to update the user.");
-            ServiceError::Internal
+            ServiceError::internal(e)
         })?;
 
         UserRow::from(model).try_into()

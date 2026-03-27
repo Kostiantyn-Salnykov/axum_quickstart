@@ -8,3 +8,4 @@ domain = {path = "../domain"}
 async-trait = "0.1.89"
 thiserror = "2.0.18"
 uuid = { version = "1.22.0", features = ["v4"] }
+anyhow = "1.0.102"

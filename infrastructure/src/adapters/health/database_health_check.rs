@@ -27,13 +27,15 @@ impl DatabaseHealthCheck for SeaOrmDatabaseHealthCheck {
             .await
             .map_err(|e| {
                 tracing::error!(error = %e, "Failed to return CURRENT_TIMESTAMP.");
-                ServiceError::Internal
+                ServiceError::internal(e)
             })?
-            .ok_or_else(|| ServiceError::Internal)?;
+            .ok_or_else(|| {
+                ServiceError::internal(anyhow::anyhow!("Health check query returned no rows."))
+            })?;
 
         let ts: String = row.try_get("", "current_timestamp").map_err(|e| {
             tracing::error!(error = %e, "Cannot retrieve `current_timestamp` from query result.");
-            ServiceError::Internal
+            ServiceError::internal(e)
         })?;
 
         Ok(ts)

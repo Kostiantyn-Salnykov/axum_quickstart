@@ -132,6 +132,7 @@ dependencies = [
 name = "application"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "async-trait",
  "domain",
  "thiserror",
@@ -1488,6 +1489,7 @@ dependencies = [
 name = "infrastructure"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "application",
  "argon2",
  "async-trait",

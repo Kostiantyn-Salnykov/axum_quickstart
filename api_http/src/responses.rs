@@ -37,6 +37,7 @@ impl<T: Serialize> IntoResponse for JsendResponse<T> {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (http_status, jsend_status, message) = match &self {
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, JsendStatus::Fail, msg.clone()),
             AppError::NotFound(msg) => (StatusCode::NOT_FOUND, JsendStatus::Fail, msg.clone()),
             AppError::Validation(msg) => (
                 StatusCode::UNPROCESSABLE_ENTITY,
@@ -49,11 +50,14 @@ impl IntoResponse for AppError {
                 JsendStatus::Error,
                 "Unauthorized".to_string(),
             ),
-            AppError::Internal(e) => (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                JsendStatus::Error,
-                e.to_string(),
-            ),
+            AppError::Internal(error) => {
+                tracing::error!(error = ?error, "Unhandled internal application error.");
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    JsendStatus::Error,
+                    "Internal server error".to_string(),
+                )
+            }
         };
 
         let body = JsendResponse::<()> {

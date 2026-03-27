@@ -23,10 +23,10 @@ impl ArgonPasswordHasher {
 
 impl PasswordHasherPort for ArgonPasswordHasher {
     fn hash(&self, plaintext: &str) -> Result<String, ServiceError> {
-        Self::hash(plaintext).map_err(|_| ServiceError::Internal)
+        Self::hash(plaintext).map_err(ServiceError::internal)
     }
 
     fn verify(&self, plaintext: &str, hash: &str) -> Result<bool, ServiceError> {
-        Self::verify(plaintext, hash).map_err(|_| ServiceError::Internal)
+        Self::verify(plaintext, hash).map_err(ServiceError::internal)
     }
 }
