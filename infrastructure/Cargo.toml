@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 domain = {path = "../domain"}
-service = {path = "../service"}
+application = {path = "../application"}
 sea-orm = { version = "2.0.0-rc", features = [ "sqlx-postgres", "runtime-tokio-rustls", "debug-print", "with-uuid", "with-json", "with-chrono", "with-bigdecimal", "macros" ] }
 dotenvy = "0.15.7"
 serde = { version = "1.0.228", features = ["derive"] }

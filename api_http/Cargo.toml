@@ -6,8 +6,7 @@ edition = "2024"
 [dependencies]
 axum = { version = "0.8.8",features = ["tracing", "tokio", "tower-log"] }
 serde = { version = "1.0.228", features = ["derive"] }
-service = { path = "../service" }
-domain = { path = "../domain" }
+application = { path = "../application" }
 thiserror = "2.0.18"
 anyhow = "1.0.102"
 tower-http = { version = "0.6.8",features = ["trace", "request-id", "util", "uuid"] }

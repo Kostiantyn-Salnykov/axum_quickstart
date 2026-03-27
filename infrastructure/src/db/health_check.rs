@@ -1,7 +1,7 @@
+use application::errors::ServiceError;
+use application::ports::outbound::health_check::DatabaseHealthCheck;
 use async_trait::async_trait;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
-use service::errors::ServiceError;
-use service::ports::health_check::HealthCheckProvider;
 
 pub struct DbHealthCheckProvider {
     db: DatabaseConnection,
@@ -14,7 +14,7 @@ impl DbHealthCheckProvider {
 }
 
 #[async_trait]
-impl HealthCheckProvider for DbHealthCheckProvider {
+impl DatabaseHealthCheck for DbHealthCheckProvider {
     async fn current_timestamp(&self) -> Result<String, ServiceError> {
         let stmt = Statement::from_string(
             DbBackend::Postgres,

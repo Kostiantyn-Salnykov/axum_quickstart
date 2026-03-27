@@ -118,10 +118,9 @@ name = "api_http"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "application",
  "axum",
- "domain",
  "serde",
- "service",
  "thiserror",
  "tower",
  "tower-http",
@@ -130,15 +129,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "app"
+name = "application"
 version = "0.1.0"
 dependencies = [
- "api_http",
- "axum",
- "infrastructure",
- "service",
- "tokio",
- "tracing-subscriber",
+ "async-trait",
+ "domain",
+ "thiserror",
+ "uuid",
 ]
 
 [[package]]
@@ -496,6 +493,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cdd35008169921d80bc60d3d0ab416eecb028c4cd653352907921d95084790be"
 dependencies = [
  "hybrid-array",
+]
+
+[[package]]
+name = "bootstrap"
+version = "0.1.0"
+dependencies = [
+ "api_http",
+ "application",
+ "axum",
+ "infrastructure",
+ "tokio",
+ "tracing-subscriber",
 ]
 
 [[package]]
@@ -890,7 +899,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "email_address",
- "password-hash",
  "serde",
  "thiserror",
  "uuid",
@@ -1479,6 +1487,7 @@ dependencies = [
 name = "infrastructure"
 version = "0.1.0"
 dependencies = [
+ "application",
  "argon2",
  "async-trait",
  "chrono",
@@ -1488,7 +1497,6 @@ dependencies = [
  "password-hash",
  "sea-orm",
  "serde",
- "service",
  "tracing",
  "uuid",
 ]
@@ -2618,16 +2626,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "service"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "domain",
- "thiserror",
- "uuid",
 ]
 
 [[package]]

@@ -1,9 +1,11 @@
+use application::{
+    errors::ServiceError, ports::outbound::password_hasher::PasswordHasher as PasswordHasherPort,
+};
 use argon2::{
     Argon2,
     password_hash::{PasswordHasher, PasswordVerifier},
 };
 use password_hash::phc::PasswordHash;
-use service::{errors::ServiceError, ports::user::PasswordHasher as PasswordHasherPort};
 
 pub struct ArgonPasswordHasher;
 

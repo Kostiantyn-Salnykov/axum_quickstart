@@ -1,11 +1,11 @@
 use crate::orm::entities::users;
 use crate::orm::entities::users::{ActiveModel, Entity as UserEntity};
 use crate::orm::mappers::user::UserRow;
+use application::{errors::ServiceError, ports::outbound::user_repository::UserRepository};
 use async_trait::async_trait;
 use chrono::Utc;
-use domain::entities::user::user::User;
+use domain::user::user::User;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, Set};
-use service::{errors::ServiceError, ports::user::UserRepository};
 use uuid::Uuid;
 
 pub struct DbUserRepository {

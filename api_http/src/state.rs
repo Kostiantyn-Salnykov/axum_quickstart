@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use service::use_cases::health_check::HealthCheckUseCase;
-use service::use_cases::register_user::RegisterUserUseCase;
+use application::ports::inbound::health_check::HealthCheck;
+use application::ports::inbound::register_user::RegisterUser;
 
 #[derive(Clone)]
 pub struct AppState {
-    pub health_check: Arc<dyn HealthCheckUseCase>,
-    pub register_user: Arc<dyn RegisterUserUseCase>,
+    pub health_check: Arc<dyn HealthCheck>,
+    pub register_user: Arc<dyn RegisterUser>,
 }

@@ -8,5 +8,4 @@ thiserror = "2.0.18"
 serde = { version = "1.0.228", features = ["derive"] }
 chrono = "0.4.44"
 uuid = { version = "1.22.0", features = ["v4", "v7", "v8"] }
-password-hash = "0.6.0"
 email_address = "0.2.9"

@@ -10,15 +10,16 @@ use tracing::Span;
 
 mod enums;
 mod errors;
-pub mod handlers;
+pub mod health_check;
 mod middlewares;
-pub mod schemas;
+mod response;
 pub mod state;
+pub mod users;
 
 use crate::middlewares::request_id::MakeRequestUuid;
-use handlers::health_check::health_check;
-use handlers::users::register_user;
+use health_check::health_check_handler::health_check;
 use state::AppState;
+use users::register_handler::register_user;
 
 const REQUEST_ID_HEADER: &str = "x-request-id";
 

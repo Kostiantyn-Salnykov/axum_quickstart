@@ -1,10 +1,10 @@
 pub(crate) use crate::orm::entities::users::Model as UserRow;
-use domain::entities::user::email::Email;
-use domain::entities::user::password_hash::PasswordHash;
-use domain::entities::user::provider::AuthProvider;
-use domain::entities::user::status::UserStatus;
-use domain::entities::user::user::User;
-use service::errors::ServiceError;
+use application::errors::ServiceError;
+use domain::user::email::Email;
+use domain::user::password_hash::PasswordHash;
+use domain::user::provider::AuthProvider;
+use domain::user::status::UserStatus;
+use domain::user::user::User;
 
 impl TryFrom<UserRow> for User {
     type Error = ServiceError;
