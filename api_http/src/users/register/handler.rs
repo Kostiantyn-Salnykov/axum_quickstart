@@ -1,8 +1,8 @@
 use crate::errors::AppError;
 use crate::response::JsendResponse;
 use crate::state::AppState;
-use crate::users::register_request::RegisterUserRequest;
-use crate::users::register_response::RegisterUserResponse;
+use crate::users::register::request::RegisterUserRequest;
+use crate::users::register::response::RegisterUserResponse;
 use application::errors::ServiceError;
 use axum::Json;
 use axum::extract::State;

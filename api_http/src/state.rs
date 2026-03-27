@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use application::ports::inbound::health_check::HealthCheck;
-use application::ports::inbound::register_user::RegisterUser;
+use application::system::health_check::inbound::HealthCheck;
+use application::users::register::inbound::RegisterUser;
 
 #[derive(Clone)]
 pub struct AppState {

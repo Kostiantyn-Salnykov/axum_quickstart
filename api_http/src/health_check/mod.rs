@@ -1,2 +1,3 @@
-pub mod health_check_handler;
-pub mod health_check_response;
+pub mod check;
+
+pub use check::router;

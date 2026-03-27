@@ -1,0 +1,15 @@
+GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/health_check/
+Accept: application/json
+
+###
+
+POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/register/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "kostiantyn.salnykov@gmail.com",
+  "password": "fake123password!",
+  "first_name": "Kostiantyn",
+  "last_name": "Salnykov"
+}

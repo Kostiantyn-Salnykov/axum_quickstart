@@ -1,17 +1,14 @@
 use std::sync::Arc;
 
-use application::ports::inbound::health_check::HealthCheck;
-use application::ports::inbound::register_user::RegisterUser;
-use application::services::health_check::HealthCheckService;
-use application::services::register_user::RegisterUserService;
-use infrastructure::{db::connection::connect_db, settings::Settings};
+use application::system::health_check::inbound::HealthCheck;
+use application::system::health_check::service::HealthCheckService;
+use application::users::register::inbound::RegisterUser;
+use application::users::register::service::RegisterUserService;
+use infrastructure::{adapters, db::connection::connect_db, settings::Settings};
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use api_http::{create_router, state::AppState};
-use infrastructure::crypto::password::ArgonPasswordHasher;
-use infrastructure::db::health_check::DbHealthCheckProvider;
-use infrastructure::repositories::user::DbUserRepository;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -20,12 +17,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with(tracing_subscriber::EnvFilter::new(&settings.log_level))
         .with(tracing_subscriber::fmt::layer())
         .init();
-    println!("{:#?}", settings);
+    tracing::info!("{:#?}", settings);
     let db = connect_db(&settings).await?;
 
-    let provider = Arc::new(DbHealthCheckProvider::new(db.clone()));
-    let users = Arc::new(DbUserRepository::new(db));
-    let password_hasher = Arc::new(ArgonPasswordHasher);
+    let provider = Arc::new(
+        adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
+    );
+    let users = Arc::new(adapters::persistence::user_repository::SeaOrmUserRepository::new(db));
+    let password_hasher = Arc::new(adapters::security::password_hasher::ArgonPasswordHasher);
     let health_check: Arc<dyn HealthCheck> = Arc::new(HealthCheckService::new(provider));
     let register_user: Arc<dyn RegisterUser> =
         Arc::new(RegisterUserService::new(users, password_hasher));

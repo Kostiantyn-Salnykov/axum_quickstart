@@ -504,6 +504,7 @@ dependencies = [
  "axum",
  "infrastructure",
  "tokio",
+ "tracing",
  "tracing-subscriber",
 ]
 

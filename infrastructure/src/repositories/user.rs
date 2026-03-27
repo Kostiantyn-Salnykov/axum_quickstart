@@ -1,7 +1,7 @@
 use crate::orm::entities::users;
 use crate::orm::entities::users::{ActiveModel, Entity as UserEntity};
 use crate::orm::mappers::user::UserRow;
-use application::{errors::ServiceError, ports::outbound::user_repository::UserRepository};
+use application::{errors::ServiceError, users::shared::user_repository::UserRepository};
 use async_trait::async_trait;
 use chrono::Utc;
 use domain::user::user::User;

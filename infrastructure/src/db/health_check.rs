@@ -1,5 +1,5 @@
 use application::errors::ServiceError;
-use application::ports::outbound::health_check::DatabaseHealthCheck;
+use application::system::health_check::outbound::DatabaseHealthCheck;
 use async_trait::async_trait;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
 

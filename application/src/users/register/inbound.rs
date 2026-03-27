@@ -1,5 +1,5 @@
 use crate::errors::ServiceError;
-use crate::results::users::RegisterUserResult;
+use crate::users::register::result::RegisterUserResult;
 use async_trait::async_trait;
 
 #[async_trait]

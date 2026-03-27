@@ -1,8 +1,5 @@
 use axum::http::HeaderName;
-use axum::{
-    Router, http,
-    routing::{get, post},
-};
+use axum::{Router, http};
 use tower::ServiceBuilder;
 use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
@@ -17,18 +14,19 @@ pub mod state;
 pub mod users;
 
 use crate::middlewares::request_id::MakeRequestUuid;
-use health_check::health_check_handler::health_check;
 use state::AppState;
-use users::register_handler::register_user;
 
 const REQUEST_ID_HEADER: &str = "x-request-id";
+const API_VERSION: &str = "/v1";
 
 pub fn create_router(state: AppState) -> Router {
     let request_id_header = HeaderName::from_static(REQUEST_ID_HEADER);
+    let api_v1 = Router::new()
+        .merge(health_check::router())
+        .merge(users::router());
 
     Router::new()
-        .route("/health_check/", get(health_check))
-        .route("/users/register/", post(register_user))
+        .nest(API_VERSION, api_v1)
         .layer(
             ServiceBuilder::new()
                 .layer(SetRequestIdLayer::new(

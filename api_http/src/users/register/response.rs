@@ -1,4 +1,4 @@
-use application::results::users::RegisterUserResult;
+use application::users::register::result::RegisterUserResult;
 use serde::Serialize;
 use uuid::Uuid;
 

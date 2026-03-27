@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
 use crate::errors::ServiceError;
-use crate::ports::inbound::register_user::RegisterUser;
-use crate::ports::outbound::password_hasher::PasswordHasher;
-use crate::ports::outbound::user_repository::UserRepository;
-use crate::results::users::RegisterUserResult;
+use crate::users::register::inbound::RegisterUser;
+use crate::users::register::result::RegisterUserResult;
+use crate::users::shared::password_hasher::PasswordHasher;
+use crate::users::shared::user_repository::UserRepository;
 use async_trait::async_trait;
 use domain::user::email::Email;
 use domain::user::password_hash::PasswordHash;

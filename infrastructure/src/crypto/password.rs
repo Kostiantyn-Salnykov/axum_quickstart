@@ -1,5 +1,5 @@
 use application::{
-    errors::ServiceError, ports::outbound::password_hasher::PasswordHasher as PasswordHasherPort,
+    errors::ServiceError, users::shared::password_hasher::PasswordHasher as PasswordHasherPort,
 };
 use argon2::{
     Argon2,
