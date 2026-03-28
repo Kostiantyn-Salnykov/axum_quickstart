@@ -5,6 +5,7 @@ use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
 use tracing::Span;
 
+mod docs;
 mod enums;
 mod errors;
 pub mod health_check;
@@ -26,6 +27,7 @@ pub fn create_router(state: AppState) -> Router {
         .merge(users::router());
 
     Router::new()
+        .merge(docs::router())
         .nest(API_VERSION, api_v1)
         .layer(
             ServiceBuilder::new()
