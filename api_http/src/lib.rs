@@ -5,6 +5,7 @@ use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
 use tracing::Span;
 
+pub mod auth;
 mod docs;
 mod enums;
 mod errors;
@@ -23,6 +24,7 @@ const API_VERSION: &str = "/v1";
 pub fn create_router(state: AppState) -> Router {
     let request_id_header = HeaderName::from_static(REQUEST_ID_HEADER);
     let api_v1 = Router::new()
+        .merge(auth::router())
         .merge(health_check::router())
         .merge(users::router());
 

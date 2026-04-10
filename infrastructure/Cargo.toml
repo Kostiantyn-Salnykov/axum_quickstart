@@ -16,3 +16,4 @@ uuid = { version = "1.22.0", features = ["v4"] }
 chrono = "0.4.44"
 tracing = "0.1.44"
 anyhow = "1.0.102"
+jsonwebtoken = { version = "10.3.0", features = ["rust_crypto"] }

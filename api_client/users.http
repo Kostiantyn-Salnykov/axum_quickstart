@@ -1,21 +1,7 @@
-### Check health of DB connection by selecting current timestamp.
-# @name Healthcheck
-GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/health_check/
+### Users me.
+# @name Get user from access_token
+GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/me/
 Accept: application/json
+Authorization: Bearer {{access_token}}
 
->>! {{$projectRoot}}/api_client/response/health_check.json
-
-### Create new user.
-# @name Register user
-POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/register/
-Accept: application/json
-Content-Type: application/json
-
-{
-  "email": "kostiantyn.salnykov@gmail.com",
-  "password": "fake123password!",
-  "first_name": "Kostiantyn",
-  "last_name": "Salnykov"
-}
-
->>! {{$projectRoot}}/api_client/response/users/register.json
+>>! {{$projectRoot}}/api_client/response/users/me.json

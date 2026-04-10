@@ -1,0 +1,6 @@
+### Check health of DB connection by selecting current timestamp.
+# @name Healthcheck
+GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/health_check/
+Accept: application/json
+
+>>! {{$projectRoot}}/api_client/response/health_check.json

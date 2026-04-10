@@ -57,12 +57,12 @@ pub struct HealthCheckSuccessResponse {
 }
 
 #[derive(Serialize, ToSchema)]
-pub struct RegisterUserSuccessResponse {
+pub struct AuthRegisterSuccessResponse {
     #[schema(example = "success")]
     pub status: JsendSuccessStatus,
     #[schema(example = 201)]
     pub code: u16,
     #[schema(example = "User registered successfully.")]
     pub message: Option<String>,
-    pub data: crate::users::register::response::RegisterUserResponse,
+    pub data: crate::auth::register::response::RegisterResponse,
 }

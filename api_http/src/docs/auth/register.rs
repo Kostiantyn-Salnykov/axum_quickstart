@@ -1,11 +1,11 @@
-use crate::users::register::request::RegisterUserRequest;
+use crate::auth::register::request::RegisterRequest;
 
 #[utoipa::path(
     post,
-    path = "/v1/users/register/",
-    tag = "users",
+    path = "/v1/auth/register/",
+    tag = "auth",
     request_body(
-        content = RegisterUserRequest,
+        content = RegisterRequest,
         description = "User registration payload",
         content_type = "application/json",
         examples(
@@ -33,7 +33,7 @@ use crate::users::register::request::RegisterUserRequest;
         (
             status = 201,
             description = "User registered successfully",
-            body = crate::docs::schemas::RegisterUserSuccessResponse
+            body = crate::docs::schemas::AuthRegisterSuccessResponse
         ),
         (
             status = 400,
@@ -82,4 +82,4 @@ use crate::users::register::request::RegisterUserRequest;
         )
     )
 )]
-fn register_user_docs() {}
+fn auth_register_docs() {}

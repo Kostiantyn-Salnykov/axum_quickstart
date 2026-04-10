@@ -16,6 +16,12 @@ pub struct Settings {
     pub redis_insight_port: u16,
 
     pub log_level: String,
+    #[serde(default = "default_jwt_secret")]
+    pub jwt_secret: String,
+    #[serde(default = "default_access_token_ttl_minutes")]
+    pub access_token_ttl_minutes: i64,
+    #[serde(default = "default_refresh_token_ttl_days")]
+    pub refresh_token_ttl_days: i64,
 }
 
 impl Settings {
@@ -38,4 +44,16 @@ impl Settings {
     pub fn server_addr(&self) -> String {
         format!("0.0.0.0:{port}", port = self.server_port)
     }
+}
+
+fn default_jwt_secret() -> String {
+    "change-me-super-secret-jwt-key".to_string()
+}
+
+fn default_access_token_ttl_minutes() -> i64 {
+    60
+}
+
+fn default_refresh_token_ttl_days() -> i64 {
+    30
 }

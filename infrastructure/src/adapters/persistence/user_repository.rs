@@ -1,6 +1,7 @@
 use crate::orm::entities::prelude::Users as UserEntity;
 use crate::orm::entities::users;
 use crate::orm::mappers::user::{UserRow, to_create_model, to_update_model};
+use application::auth::user_repository::UserRepository as AuthUserRepository;
 use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;
@@ -65,5 +66,24 @@ impl UserRepository for SeaOrmUserRepository {
         })?;
 
         UserRow::from(model).try_into()
+    }
+}
+
+#[async_trait]
+impl AuthUserRepository for SeaOrmUserRepository {
+    async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, ServiceError> {
+        UserRepository::find_by_id(self, id).await
+    }
+
+    async fn find_by_email(&self, email: &str) -> Result<Option<User>, ServiceError> {
+        UserRepository::find_by_email(self, email).await
+    }
+
+    async fn create(&self, user: &User) -> Result<User, ServiceError> {
+        UserRepository::create(self, user).await
+    }
+
+    async fn update(&self, user: &User) -> Result<User, ServiceError> {
+        UserRepository::update(self, user).await
     }
 }

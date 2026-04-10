@@ -1,22 +1,22 @@
 use std::sync::Arc;
 
+use crate::auth::password_hasher::PasswordHasher;
+use crate::auth::register::inbound::Register;
+use crate::auth::register::result::RegisterResult;
+use crate::auth::user_repository::UserRepository;
 use crate::errors::ServiceError;
-use crate::users::password_hasher::PasswordHasher;
-use crate::users::register::inbound::RegisterUser;
-use crate::users::register::result::RegisterUserResult;
-use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use domain::user::email::Email;
 use domain::user::password_hash::PasswordHash;
 use domain::user::user::User;
 
 #[derive(Clone)]
-pub struct RegisterUserService {
+pub struct RegisterService {
     users: Arc<dyn UserRepository>,
     password_hasher: Arc<dyn PasswordHasher>,
 }
 
-impl RegisterUserService {
+impl RegisterService {
     pub fn new(users: Arc<dyn UserRepository>, password_hasher: Arc<dyn PasswordHasher>) -> Self {
         Self {
             users,
@@ -26,14 +26,14 @@ impl RegisterUserService {
 }
 
 #[async_trait]
-impl RegisterUser for RegisterUserService {
+impl Register for RegisterService {
     async fn register(
         &self,
         email: String,
         password: String,
         first_name: Option<String>,
         last_name: Option<String>,
-    ) -> Result<RegisterUserResult, ServiceError> {
+    ) -> Result<RegisterResult, ServiceError> {
         let email = Email::new(&email).map_err(|e| ServiceError::Validation(e.to_string()))?;
         let password = password.trim().to_string();
 
@@ -65,7 +65,7 @@ impl RegisterUser for RegisterUserService {
         }
 
         user = self.users.create(&user).await?;
-        Ok(RegisterUserResult {
+        Ok(RegisterResult {
             id: user.id,
             email: user.email.to_owned(),
             first_name: user.first_name,

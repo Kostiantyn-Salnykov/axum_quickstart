@@ -1,0 +1,33 @@
+### Create new user.
+# @name Register user
+POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/auth/register/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "kostiantyn.salnykov@gmail.com",
+  "password": "fake123password!",
+  "first_name": "Kostiantyn",
+  "last_name": "Salnykov"
+}
+
+>>! {{$projectRoot}}/api_client/response/auth/register.json
+
+
+### Login.
+# @name Login user
+POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/auth/login/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "email": "kostiantyn.salnykov@gmail.com",
+  "password": "fake123password!"
+}
+
+> {%
+  client.global.set("access_token", response.body.data.access_token);
+  client.global.set("refresh_token", response.body.data.refresh_token);
+  %}
+
+>>! {{$projectRoot}}/api_client/response/auth/login.json

@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-pub struct RegisterUserResult {
+pub struct RegisterResult {
     pub id: Uuid,
     pub email: String,
     pub first_name: String,

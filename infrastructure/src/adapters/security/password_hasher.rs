@@ -1,5 +1,5 @@
+use application::auth::password_hasher::PasswordHasher as AuthPasswordHasherPort;
 use application::errors::ServiceError;
-use application::users::password_hasher::PasswordHasher as PasswordHasherPort;
 use argon2::{
     Argon2, PasswordHash,
     password_hash::{PasswordHasher, PasswordVerifier},
@@ -21,7 +21,7 @@ impl ArgonPasswordHasher {
     }
 }
 
-impl PasswordHasherPort for ArgonPasswordHasher {
+impl AuthPasswordHasherPort for ArgonPasswordHasher {
     fn hash(&self, plaintext: &str) -> Result<String, ServiceError> {
         Self::hash(plaintext).map_err(ServiceError::internal)
     }
