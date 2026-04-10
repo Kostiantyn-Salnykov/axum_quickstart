@@ -7,7 +7,6 @@ use crate::auth::user_repository::UserRepository;
 use crate::errors::ServiceError;
 use async_trait::async_trait;
 use domain::user::email::Email;
-use domain::user::password_hash::PasswordHash;
 use domain::user::user::User;
 
 #[derive(Clone)]
@@ -50,7 +49,7 @@ impl Register for RegisterService {
         }
 
         let hash = self.password_hasher.hash(&password)?;
-        let mut user = User::new_local(email, PasswordHash::from_hash(hash));
+        let mut user = User::new_local(email, hash.into());
 
         if let Some(first_name) = first_name.map(|v| v.trim().to_string()) {
             if !first_name.is_empty() {
@@ -65,12 +64,6 @@ impl Register for RegisterService {
         }
 
         user = self.users.create(&user).await?;
-        Ok(RegisterResult {
-            id: user.id,
-            email: user.email.to_owned(),
-            first_name: user.first_name,
-            last_name: user.last_name,
-            status: user.status.as_str().to_owned(),
-        })
+        Ok(user.into())
     }
 }

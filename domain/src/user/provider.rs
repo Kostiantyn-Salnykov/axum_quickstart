@@ -1,4 +1,5 @@
 use crate::errors::DomainError;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -28,5 +29,11 @@ impl FromStr for AuthProvider {
             "github" => Ok(Self::GitHub),
             _ => Err(DomainError::UnknownAuthProvider(s.to_owned())),
         }
+    }
+}
+
+impl Display for AuthProvider {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
     }
 }

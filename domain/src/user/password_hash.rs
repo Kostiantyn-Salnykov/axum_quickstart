@@ -1,20 +1,20 @@
 #[derive(Debug, Clone)]
 pub struct PasswordHash(String);
 
-impl PasswordHash {
-    pub fn from_hash(hash: String) -> Self {
-        Self(hash)
-    }
-
-    pub fn as_str(&self) -> &str {
+impl AsRef<str> for PasswordHash {
+    fn as_ref(&self) -> &str {
         &self.0
     }
+}
 
-    pub fn to_owned(&self) -> String {
-        self.0.clone()
+impl From<String> for PasswordHash {
+    fn from(value: String) -> Self {
+        Self(value)
     }
+}
 
-    pub fn into_inner(self) -> String {
-        self.0
+impl From<PasswordHash> for String {
+    fn from(value: PasswordHash) -> Self {
+        value.0
     }
 }

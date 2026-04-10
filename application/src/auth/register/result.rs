@@ -1,3 +1,4 @@
+use domain::user::user::User;
 use uuid::Uuid;
 
 pub struct RegisterResult {
@@ -6,4 +7,16 @@ pub struct RegisterResult {
     pub first_name: String,
     pub last_name: String,
     pub status: String,
+}
+
+impl From<User> for RegisterResult {
+    fn from(user: User) -> Self {
+        Self {
+            id: user.id,
+            email: user.email.to_string(),
+            first_name: user.first_name,
+            last_name: user.last_name,
+            status: user.status.to_string(),
+        }
+    }
 }

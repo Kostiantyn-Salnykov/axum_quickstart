@@ -1,5 +1,6 @@
 use crate::errors::ServiceError;
 use chrono::{DateTime, Utc};
+use std::fmt::{Display, Formatter};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -18,6 +19,12 @@ impl TokenAudience {
             Self::EmailConfirm => "email_confirm",
             Self::PasswordReset => "password_reset",
         }
+    }
+}
+
+impl Display for TokenAudience {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
     }
 }
 

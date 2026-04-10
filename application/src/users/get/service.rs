@@ -6,7 +6,6 @@ use crate::users::get::inbound::GetUser;
 use crate::users::get::result::UserResult;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
-use domain::user::user::User;
 use uuid::Uuid;
 
 #[derive(Clone)]
@@ -22,17 +21,6 @@ impl GetUserService {
             token_manager,
         }
     }
-
-    fn to_result(user: User) -> UserResult {
-        UserResult {
-            id: user.id,
-            email: user.email.to_owned(),
-            first_name: user.first_name,
-            last_name: user.last_name,
-            status: user.status.as_str().to_owned(),
-            provider: user.provider.map(|provider| provider.as_str().to_owned()),
-        }
-    }
 }
 
 #[async_trait]
@@ -43,7 +31,7 @@ impl GetUser for GetUserService {
             .find_by_id(id)
             .await?
             .ok_or(ServiceError::NotFound)?;
-        Ok(Self::to_result(user))
+        Ok(UserResult::from(user))
     }
 
     async fn get_me(&self, access_token: String) -> Result<UserResult, ServiceError> {
@@ -58,6 +46,6 @@ impl GetUser for GetUserService {
             .await?
             .ok_or(ServiceError::InvalidCredentials)?;
 
-        Ok(Self::to_result(user))
+        Ok(UserResult::from(user))
     }
 }

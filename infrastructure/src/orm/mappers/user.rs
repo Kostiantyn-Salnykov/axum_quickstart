@@ -23,7 +23,7 @@ impl TryFrom<UserRow> for User {
             first_name: row.first_name,
             last_name: row.last_name,
             email,
-            password_hash: row.password_hash.map(PasswordHash::from_hash),
+            password_hash: row.password_hash.map(PasswordHash::from),
             status,
             provider,
             created_at: row.created_at.into(),
@@ -80,13 +80,13 @@ pub(crate) fn to_create_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
         id: Set(user.id),
         first_name: Set(user.first_name.clone()),
         last_name: Set(user.last_name.clone()),
-        email: Set(user.email.to_owned()),
-        password_hash: Set(user.password_hash.as_ref().map(PasswordHash::to_owned)),
-        status: Set(user.status.as_str().to_owned()),
-        provider: Set(user
-            .provider
+        email: Set(user.email.to_string()),
+        password_hash: Set(user
+            .password_hash
             .as_ref()
-            .map(|provider| provider.as_str().to_owned())),
+            .map(|hash| hash.as_ref().to_owned())),
+        status: Set(user.status.to_string()),
+        provider: Set(user.provider.as_ref().map(|provider| provider.to_string())),
         created_at: Set(now.into()),
         updated_at: Set(now.into()),
     }
@@ -97,13 +97,13 @@ pub(crate) fn to_update_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
         id: Set(user.id),
         first_name: Set(user.first_name.clone()),
         last_name: Set(user.last_name.clone()),
-        email: Set(user.email.to_owned()),
-        password_hash: Set(user.password_hash.as_ref().map(PasswordHash::to_owned)),
-        status: Set(user.status.as_str().to_owned()),
-        provider: Set(user
-            .provider
+        email: Set(user.email.to_string()),
+        password_hash: Set(user
+            .password_hash
             .as_ref()
-            .map(|provider| provider.as_str().to_owned())),
+            .map(|hash| hash.as_ref().to_owned())),
+        status: Set(user.status.to_string()),
+        provider: Set(user.provider.as_ref().map(|provider| provider.to_string())),
         updated_at: Set(now.into()),
         ..Default::default()
     }

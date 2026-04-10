@@ -1,5 +1,6 @@
 use crate::errors::DomainError;
 use email_address::EmailAddress;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -24,6 +25,12 @@ impl Email {
 impl AsRef<str> for Email {
     fn as_ref(&self) -> &str {
         self.as_str()
+    }
+}
+
+impl Display for Email {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
     }
 }
 

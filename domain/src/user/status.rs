@@ -1,5 +1,6 @@
 use crate::errors::DomainError;
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,5 +44,11 @@ impl FromStr for UserStatus {
             "external_provider" => Ok(Self::ExternalProvider),
             _ => Err(DomainError::UnknownUserStatus(s.to_owned())),
         }
+    }
+}
+
+impl Display for UserStatus {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
     }
 }

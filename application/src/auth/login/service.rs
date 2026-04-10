@@ -47,7 +47,7 @@ impl Login for LoginService {
             .as_ref()
             .ok_or(ServiceError::InvalidCredentials)?;
 
-        let is_valid = self.password_hasher.verify(password, hash.as_str())?;
+        let is_valid = self.password_hasher.verify(password, hash.as_ref())?;
         if !is_valid || !user.status.can_login() {
             return Err(ServiceError::InvalidCredentials);
         }
