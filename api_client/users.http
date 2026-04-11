@@ -5,3 +5,12 @@ Accept: application/json
 Authorization: Bearer {{access_token}}
 
 >>! {{$projectRoot}}/api_client/response/users/me.json
+
+
+### Get user by ID.
+# @name Get user from access_token
+GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/{{user_id}}/
+Accept: application/json
+Authorization: Bearer {{access_token}}
+
+>>! {{$projectRoot}}/api_client/response/users/get_by_id.json

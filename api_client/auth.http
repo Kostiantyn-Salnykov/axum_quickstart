@@ -28,6 +28,21 @@ Content-Type: application/json
 > {%
   client.global.set("access_token", response.body.data.access_token);
   client.global.set("refresh_token", response.body.data.refresh_token);
+  client.global.set("user_id", response.body.data.user_id);
   %}
 
 >>! {{$projectRoot}}/api_client/response/auth/login.json
+
+
+
+### Refersh token to new pair.
+# @name Refersh token to new pair.
+POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/auth/token/refresh/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "refresh_token": "{{refresh_token}}"
+}
+
+>>! {{$projectRoot}}/api_client/response/auth/token/refresh.json
