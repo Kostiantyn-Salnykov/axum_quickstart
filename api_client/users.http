@@ -8,7 +8,7 @@ Authorization: Bearer {{access_token}}
 
 
 ### Get user by ID.
-# @name Get user from access_token
+# @name Get user by ID
 GET http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/users/{{user_id}}/
 Accept: application/json
 Authorization: Bearer {{access_token}}

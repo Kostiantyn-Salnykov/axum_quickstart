@@ -4,8 +4,8 @@ use crate::auth::login::inbound::Login;
 use crate::auth::login::result::LoginResult;
 use crate::auth::password_hasher::PasswordHasher;
 use crate::auth::token_manager::TokenManager;
-use crate::auth::user_repository::UserRepository;
 use crate::errors::ServiceError;
+use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use domain::user::email::Email;
 

@@ -3,8 +3,8 @@ use std::sync::Arc;
 use crate::auth::refresh::inbound::Refresh;
 use crate::auth::refresh::result::RefreshResult;
 use crate::auth::token_manager::{TokenAudience, TokenManager};
-use crate::auth::user_repository::UserRepository;
 use crate::errors::ServiceError;
+use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 
 #[derive(Clone)]
