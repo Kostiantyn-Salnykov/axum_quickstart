@@ -7,6 +7,7 @@ pub trait Register: Send + Sync {
     async fn register(
         &self,
         email: String,
+        phone: Option<String>,
         password: String,
         first_name: Option<String>,
         last_name: Option<String>,

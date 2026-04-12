@@ -7,6 +7,7 @@ use crate::errors::ServiceError;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use domain::user::email::Email;
+use domain::user::phone::Phone;
 use domain::user::user::User;
 
 #[derive(Clone)]
@@ -29,11 +30,17 @@ impl Register for RegisterService {
     async fn register(
         &self,
         email: String,
+        phone: Option<String>,
         password: String,
         first_name: Option<String>,
         last_name: Option<String>,
     ) -> Result<RegisterResult, ServiceError> {
         let email = Email::new(&email).map_err(|e| ServiceError::Validation(e.to_string()))?;
+        let phone = phone
+            .map(|value| value.trim().to_string())
+            .filter(|value| !value.is_empty())
+            .map(|value| Phone::new(&value).map_err(|e| ServiceError::Validation(e.to_string())))
+            .transpose()?;
         let password = password.trim().to_string();
 
         if password.len() < 8 {
@@ -50,6 +57,7 @@ impl Register for RegisterService {
 
         let hash = self.password_hasher.hash(&password)?;
         let mut user = User::new_local(email, hash.into());
+        user.set_phone(phone);
 
         if let Some(first_name) = first_name.map(|v| v.trim().to_string()) {
             if !first_name.is_empty() {

@@ -5,6 +5,8 @@ use utoipa::ToSchema;
 pub struct RegisterRequest {
     #[schema(example = "kostiantyn.salnykov@gmail.com")]
     pub email: String,
+    #[schema(example = "+380978531216", nullable = true)]
+    pub phone: Option<String>,
     #[schema(example = "fake123password!")]
     pub password: String,
     #[schema(example = "Kostiantyn")]

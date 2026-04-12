@@ -8,6 +8,9 @@ pub enum DomainError {
     #[error("Invalid password.")]
     InvalidPassword,
 
+    #[error("Invalid phone format.")]
+    InvalidPhone,
+
     #[error("Operation isn't allowed for this status: {0}.")]
     InvalidStatusTransition(String),
 

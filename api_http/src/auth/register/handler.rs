@@ -19,6 +19,7 @@ pub async fn register(
         .register
         .register(
             payload.email,
+            payload.phone,
             payload.password,
             payload.first_name,
             payload.last_name,

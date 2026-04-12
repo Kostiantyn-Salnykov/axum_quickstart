@@ -13,6 +13,7 @@ use crate::auth::register::request::RegisterRequest;
                 summary = "Registration with full name",
                 value = json!({
                     "email": "kostiantyn.salnykov@gmail.com",
+                    "phone": "+380671234567",
                     "password": "fake123password!",
                     "first_name": "Kostiantyn",
                     "last_name": "Salnykov"
@@ -22,6 +23,7 @@ use crate::auth::register::request::RegisterRequest;
                 summary = "Registration without optional names",
                 value = json!({
                     "email": "kostiantyn.salnykov@gmail.com",
+                    "phone": null,
                     "password": "fake123password!",
                     "first_name": null,
                     "last_name": null

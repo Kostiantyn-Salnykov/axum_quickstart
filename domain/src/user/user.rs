@@ -1,5 +1,6 @@
 use super::email::Email;
 use super::password_hash::PasswordHash;
+use super::phone::Phone;
 use super::provider::AuthProvider;
 use super::status::UserStatus;
 use chrono::{DateTime, Utc};
@@ -11,6 +12,7 @@ pub struct User {
     pub first_name: String,
     pub last_name: String,
     pub email: Email,
+    pub phone: Option<Phone>,
     pub password_hash: Option<PasswordHash>,
     pub status: UserStatus,
     pub provider: Option<AuthProvider>,
@@ -25,6 +27,7 @@ impl User {
             first_name: "".to_string(),
             last_name: "".to_string(),
             email,
+            phone: None,
             password_hash: Some(password_hash),
             status: UserStatus::Unconfirmed,
             provider: None,
@@ -39,6 +42,7 @@ impl User {
             first_name: "".to_string(),
             last_name: "".to_string(),
             email,
+            phone: None,
             password_hash: None,
             status: UserStatus::ExternalProvider,
             provider: Some(provider),
@@ -50,6 +54,11 @@ impl User {
     pub fn set_name(&mut self, first_name: String, last_name: String) {
         self.first_name = first_name;
         self.last_name = last_name;
+        self.updated_at = Utc::now();
+    }
+
+    pub fn set_phone(&mut self, phone: Option<Phone>) {
+        self.phone = phone;
         self.updated_at = Utc::now();
     }
 

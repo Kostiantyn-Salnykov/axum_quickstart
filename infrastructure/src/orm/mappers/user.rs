@@ -4,6 +4,7 @@ use application::errors::ServiceError;
 use chrono::{DateTime, Utc};
 use domain::user::email::Email;
 use domain::user::password_hash::PasswordHash;
+use domain::user::phone::Phone;
 use domain::user::provider::AuthProvider;
 use domain::user::status::UserStatus;
 use domain::user::user::User;
@@ -15,6 +16,7 @@ impl TryFrom<UserRow> for User {
 
     fn try_from(row: UserRow) -> Result<Self, Self::Error> {
         let email = map_email(&row)?;
+        let phone = map_phone(&row)?;
         let status = map_status(&row)?;
         let provider = map_provider(&row)?;
 
@@ -23,6 +25,7 @@ impl TryFrom<UserRow> for User {
             first_name: row.first_name,
             last_name: row.last_name,
             email,
+            phone,
             password_hash: row.password_hash.map(PasswordHash::from),
             status,
             provider,
@@ -30,6 +33,22 @@ impl TryFrom<UserRow> for User {
             updated_at: row.updated_at.into(),
         })
     }
+}
+
+fn map_phone(row: &UserRow) -> Result<Option<Phone>, ServiceError> {
+    row.phone
+        .as_deref()
+        .map(Phone::new)
+        .transpose()
+        .map_err(|e| {
+            tracing::error!(
+                error = %e,
+                user_id = %row.id,
+                phone = ?row.phone,
+                "Failed to map user row: invalid phone"
+            );
+            ServiceError::internal(e)
+        })
 }
 
 fn map_email(row: &UserRow) -> Result<Email, ServiceError> {
@@ -81,6 +100,7 @@ pub(crate) fn to_create_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
         first_name: Set(user.first_name.clone()),
         last_name: Set(user.last_name.clone()),
         email: Set(user.email.to_string()),
+        phone: Set(user.phone.as_ref().map(|phone| phone.to_string())),
         password_hash: Set(user
             .password_hash
             .as_ref()
@@ -98,6 +118,7 @@ pub(crate) fn to_update_model(user: &User, now: DateTime<Utc>) -> ActiveModel {
         first_name: Set(user.first_name.clone()),
         last_name: Set(user.last_name.clone()),
         email: Set(user.email.to_string()),
+        phone: Set(user.phone.as_ref().map(|phone| phone.to_string())),
         password_hash: Set(user
             .password_hash
             .as_ref()

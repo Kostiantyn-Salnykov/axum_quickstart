@@ -55,5 +55,5 @@ fn default_access_token_ttl_minutes() -> i64 {
 }
 
 fn default_refresh_token_ttl_days() -> i64 {
-    30
+    7
 }

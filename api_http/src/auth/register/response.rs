@@ -9,6 +9,8 @@ pub struct RegisterResponse {
     pub id: Uuid,
     #[schema(example = "kostiantyn.salnykov@gmail.com")]
     pub email: String,
+    #[schema(example = "+380671234567", nullable = true)]
+    pub phone: Option<String>,
     #[schema(example = "Kostiantyn")]
     pub first_name: String,
     #[schema(example = "Salnykov")]
@@ -22,6 +24,7 @@ impl From<RegisterResult> for RegisterResponse {
         Self {
             id: value.id,
             email: value.email,
+            phone: value.phone,
             first_name: value.first_name,
             last_name: value.last_name,
             status: value.status,
