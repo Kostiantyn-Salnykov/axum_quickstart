@@ -29,7 +29,7 @@ Regenerate sea_orm entities:
 ```powershell
 sea-orm-cli generate entity `
   -u "postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@${env:POSTGRES_HOST}:${env:POSTGRES_PORT}/${env:POSTGRES_DB}" `
--o infrastructure/src/seaorm/entities `
+-o infrastructure/src/orm/entities `
 --ignore-tables migrations
 ```
 
@@ -41,4 +41,8 @@ sea-orm-cli migrate up -d infrastructure/migration
 Rollback database schema:
 ```powershell
 sea-orm-cli migrate down -d infrastructure/migrations
+```
+
+```powershell
+sea-orm-cli migrate generate <NAME> -d infrastructure/migrations
 ```

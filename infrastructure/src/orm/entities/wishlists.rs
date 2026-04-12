@@ -3,19 +3,14 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "wishlists")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub first_name: String,
-    pub last_name: String,
-    #[sea_orm(unique)]
-    pub email: String,
-    #[sea_orm(unique)]
-    pub phone: Option<String>,
-    pub password_hash: Option<String>,
-    pub status: String,
-    pub provider: Option<String>,
+    pub title: String,
+    pub description: String,
+    pub priority: i32,
+    pub settings: Option<Json>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
 }
@@ -32,12 +27,12 @@ impl Related<super::users_wishlists::Entity> for Entity {
     }
 }
 
-impl Related<super::wishlists::Entity> for Entity {
+impl Related<super::users::Entity> for Entity {
     fn to() -> RelationDef {
-        super::users_wishlists::Relation::Wishlists.def()
+        super::users_wishlists::Relation::Users.def()
     }
     fn via() -> Option<RelationDef> {
-        Some(super::users_wishlists::Relation::Users.def().rev())
+        Some(super::users_wishlists::Relation::Wishlists.def().rev())
     }
 }
 

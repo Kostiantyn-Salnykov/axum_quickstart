@@ -3,3 +3,5 @@
 pub mod prelude;
 
 pub mod users;
+pub mod users_wishlists;
+pub mod wishlists;

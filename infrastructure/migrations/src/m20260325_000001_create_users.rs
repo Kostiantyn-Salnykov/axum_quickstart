@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
                     .col(string_len(User::FirstName, 128).not_null())
                     .col(string_len(User::LastName, 128).not_null())
                     .col(string_len(User::Email, 256).not_null())
-                    .col(string_len(User::Phone, 20))
+                    .col(string_len_null(User::Phone, 20))
                     .col(string_null(User::PasswordHash))
                     .col(string_len(User::Status, 32).not_null())
                     .col(string_len_null(User::Provider, 32))
