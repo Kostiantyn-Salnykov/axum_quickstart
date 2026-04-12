@@ -8,6 +8,7 @@ use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use domain::user::email::Email;
 use domain::user::phone::Phone;
+use domain::user::plain_password::PlainPassword;
 use domain::user::user::User;
 
 #[derive(Clone)]
@@ -41,13 +42,8 @@ impl Register for RegisterService {
             .filter(|value| !value.is_empty())
             .map(|value| Phone::new(&value).map_err(|e| ServiceError::Validation(e.to_string())))
             .transpose()?;
-        let password = password.trim().to_string();
-
-        if password.len() < 8 {
-            return Err(ServiceError::Validation(
-                "Password must be at least 8 characters long.".to_string(),
-            ));
-        }
+        let password =
+            PlainPassword::new(&password).map_err(|e| ServiceError::Validation(e.to_string()))?;
 
         if self.users.find_by_email(email.as_str()).await?.is_some() {
             return Err(ServiceError::Conflict(
@@ -55,7 +51,7 @@ impl Register for RegisterService {
             ));
         }
 
-        let hash = self.password_hasher.hash(&password)?;
+        let hash = self.password_hasher.hash(password.as_str())?;
         let mut user = User::new_local(email, hash.into());
         user.set_phone(phone);
 

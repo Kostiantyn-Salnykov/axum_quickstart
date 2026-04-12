@@ -1,5 +1,5 @@
 use crate::errors::DomainError;
-use phonenumber::{Mode, country, parse};
+use phonenumber::{Mode, parse};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 

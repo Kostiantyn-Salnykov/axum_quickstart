@@ -5,8 +5,8 @@ pub enum DomainError {
     #[error("Invalid email format.")]
     InvalidEmail,
 
-    #[error("Invalid password.")]
-    InvalidPassword,
+    #[error("{0}")]
+    InvalidPassword(String),
 
     #[error("Invalid phone format.")]
     InvalidPhone,
