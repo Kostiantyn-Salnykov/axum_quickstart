@@ -46,4 +46,19 @@ Content-Type: application/json
   "refresh_token": "{{refresh_token}}"
 }
 
+> {%
+  client.global.set("access_token", response.body.data.access_token);
+  client.global.set("refresh_token", response.body.data.refresh_token);
+  client.global.set("user_id", response.body.data.user_id);
+%}
+
 >>! {{$projectRoot}}/api_client/response/auth/token/refresh.json
+
+
+### Logout current token.
+# @name Logout user
+POST http://{{SERVER_HOST}}:{{SERVER_PORT}}/v1/auth/logout/
+Accept: application/json
+Authorization: Bearer {{access_token}}
+
+>>! {{$projectRoot}}/api_client/response/auth/logout.json

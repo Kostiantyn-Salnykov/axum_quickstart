@@ -35,7 +35,7 @@ impl GetUser for GetUserService {
     }
 
     async fn get_me(&self, access_token: String) -> Result<UserResult, ServiceError> {
-        let payload = self.token_manager.verify(access_token.trim())?;
+        let payload = self.token_manager.verify(access_token.trim()).await?;
         if payload.audience != TokenAudience::Access {
             return Err(ServiceError::InvalidCredentials);
         }

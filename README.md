@@ -12,6 +12,7 @@ PGADMIN_LISTEN_PORT=8080
 
 REDIS_PORT=8000
 REDIS_INSIGHT_PORT=8001
+REDIS_HOST=127.0.0.1
 
 LOG_LEVEL=trace,tower_http=info,sea_orm=info,axum=info,api_http=info
 ```

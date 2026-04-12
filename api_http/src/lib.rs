@@ -1,4 +1,5 @@
 use axum::http::HeaderName;
+use axum::middleware::from_fn_with_state;
 use axum::{Router, http};
 use tower::ServiceBuilder;
 use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
@@ -23,10 +24,14 @@ const API_VERSION: &str = "/v1";
 
 pub fn create_router(state: AppState) -> Router {
     let request_id_header = HeaderName::from_static(REQUEST_ID_HEADER);
+    let protected_api_v1 = Router::new()
+        .merge(auth::protected_router())
+        .merge(users::router())
+        .route_layer(from_fn_with_state(state.clone(), middlewares::require_auth));
     let api_v1 = Router::new()
-        .merge(auth::router())
+        .merge(auth::public_router())
         .merge(health_check::router())
-        .merge(users::router());
+        .merge(protected_api_v1);
 
     Router::new()
         .merge(docs::router())

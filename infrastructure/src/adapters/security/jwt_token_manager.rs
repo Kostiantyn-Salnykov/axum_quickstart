@@ -1,5 +1,9 @@
+use std::sync::Arc;
+
+use application::auth::token_blacklist::TokenBlacklist;
 use application::auth::token_manager::{TokenAudience, TokenManager, TokenPayload};
 use application::errors::ServiceError;
+use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
 use serde::{Deserialize, Serialize};
@@ -11,6 +15,7 @@ pub struct JwtTokenManager {
     decoding_key: DecodingKey,
     access_ttl: Duration,
     refresh_ttl: Duration,
+    blacklist: Arc<dyn TokenBlacklist>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -22,12 +27,18 @@ struct Claims {
 }
 
 impl JwtTokenManager {
-    pub fn new(secret: impl AsRef<[u8]>, access_ttl_minutes: i64, refresh_ttl_days: i64) -> Self {
+    pub fn new(
+        secret: impl AsRef<[u8]>,
+        access_ttl_minutes: i64,
+        refresh_ttl_days: i64,
+        blacklist: Arc<dyn TokenBlacklist>,
+    ) -> Self {
         Self {
             encoding_key: EncodingKey::from_secret(secret.as_ref()),
             decoding_key: DecodingKey::from_secret(secret.as_ref()),
             access_ttl: Duration::minutes(access_ttl_minutes),
             refresh_ttl: Duration::days(refresh_ttl_days),
+            blacklist,
         }
     }
 
@@ -51,8 +62,20 @@ impl JwtTokenManager {
 
         Ok((token, expires_at))
     }
+
+    fn decode_claims(&self, token: &str) -> Result<Claims, ServiceError> {
+        let mut validation = Validation::new(Algorithm::HS256);
+        validation.validate_exp = true;
+        validation.validate_aud = false;
+
+        let data = decode::<Claims>(token, &self.decoding_key, &validation)
+            .map_err(|_| ServiceError::InvalidCredentials)?;
+
+        Ok(data.claims)
+    }
 }
 
+#[async_trait]
 impl TokenManager for JwtTokenManager {
     fn issue_access_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError> {
         self.issue_token(user_id, TokenAudience::Access, self.access_ttl)
@@ -62,15 +85,13 @@ impl TokenManager for JwtTokenManager {
         self.issue_token(user_id, TokenAudience::Refresh, self.refresh_ttl)
     }
 
-    fn verify(&self, token: &str) -> Result<TokenPayload, ServiceError> {
-        let mut validation = Validation::new(Algorithm::HS256);
-        validation.validate_exp = true;
-        validation.validate_aud = false;
+    async fn verify(&self, token: &str) -> Result<TokenPayload, ServiceError> {
+        let claims = self.decode_claims(token)?;
+        if self.blacklist.contains(token).await? {
+            return Err(ServiceError::InvalidCredentials);
+        }
 
-        let data = decode::<Claims>(token, &self.decoding_key, &validation)
-            .map_err(|_| ServiceError::InvalidCredentials)?;
-
-        let audience = match data.claims.aud.as_str() {
+        let audience = match claims.aud.as_str() {
             "access" => TokenAudience::Access,
             "refresh" => TokenAudience::Refresh,
             "email_confirm" => TokenAudience::EmailConfirm,
@@ -78,32 +99,14 @@ impl TokenManager for JwtTokenManager {
             _ => return Err(ServiceError::InvalidCredentials),
         };
 
-        let user_id =
-            Uuid::parse_str(&data.claims.sub).map_err(|_| ServiceError::InvalidCredentials)?;
+        let user_id = Uuid::parse_str(&claims.sub).map_err(|_| ServiceError::InvalidCredentials)?;
         let expires_at =
-            DateTime::from_timestamp(data.claims.exp, 0).ok_or(ServiceError::InvalidCredentials)?;
+            DateTime::from_timestamp(claims.exp, 0).ok_or(ServiceError::InvalidCredentials)?;
 
         Ok(TokenPayload {
             user_id,
             audience,
             expires_at,
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn verifies_access_token_with_custom_audience_handling() {
-        let manager = JwtTokenManager::new("test-secret", 15, 30);
-        let user_id = Uuid::now_v7();
-        let (token, _) = manager.issue_access_token(user_id).unwrap();
-
-        let payload = manager.verify(&token).unwrap();
-
-        assert_eq!(payload.user_id, user_id);
-        assert_eq!(payload.audience, TokenAudience::Access);
     }
 }

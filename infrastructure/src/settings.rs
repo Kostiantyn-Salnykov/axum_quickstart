@@ -12,6 +12,8 @@ pub struct Settings {
 
     pub pgadmin_listen_port: u16,
 
+    #[serde(default = "default_redis_host")]
+    pub redis_host: String,
     pub redis_port: u16,
     pub redis_insight_port: u16,
 
@@ -44,6 +46,14 @@ impl Settings {
     pub fn server_addr(&self) -> String {
         format!("0.0.0.0:{port}", port = self.server_port)
     }
+
+    pub fn redis_url(&self) -> String {
+        format!(
+            "redis://{host}:{port}/",
+            host = self.redis_host,
+            port = self.redis_port
+        )
+    }
 }
 
 fn default_jwt_secret() -> String {
@@ -56,4 +66,8 @@ fn default_access_token_ttl_minutes() -> i64 {
 
 fn default_refresh_token_ttl_days() -> i64 {
     7
+}
+
+fn default_redis_host() -> String {
+    "127.0.0.1".to_string()
 }

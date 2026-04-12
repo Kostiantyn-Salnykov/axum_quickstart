@@ -1,4 +1,5 @@
 use crate::errors::AppError;
+use crate::middlewares::bearer_token;
 use crate::responses::JsendResponse;
 use crate::state::AppState;
 use crate::users::get::response::UserResponse;
@@ -32,16 +33,4 @@ pub async fn get_me(
         UserResponse::from(result),
         "Current user fetched successfully.",
     ))
-}
-
-fn bearer_token(headers: &HeaderMap) -> Result<&str, AppError> {
-    let header = headers
-        .get(axum::http::header::AUTHORIZATION)
-        .and_then(|value| value.to_str().ok())
-        .ok_or(AppError::Unauthorized)?;
-
-    header
-        .strip_prefix("Bearer ")
-        .or_else(|| header.strip_prefix("bearer "))
-        .ok_or(AppError::Unauthorized)
 }

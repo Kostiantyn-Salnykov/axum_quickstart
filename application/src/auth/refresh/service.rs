@@ -25,7 +25,7 @@ impl RefreshService {
 #[async_trait]
 impl Refresh for RefreshService {
     async fn refresh(&self, refresh_token: String) -> Result<RefreshResult, ServiceError> {
-        let payload = self.token_manager.verify(refresh_token.trim())?;
+        let payload = self.token_manager.verify(refresh_token.trim()).await?;
         if payload.audience != TokenAudience::Refresh {
             return Err(ServiceError::InvalidCredentials);
         }

@@ -1,4 +1,5 @@
 use crate::errors::ServiceError;
+use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 use std::fmt::{Display, Formatter};
 use uuid::Uuid;
@@ -43,10 +44,11 @@ pub struct TokenPair {
     pub refresh_expires_at: DateTime<Utc>,
 }
 
+#[async_trait]
 pub trait TokenManager: Send + Sync {
     fn issue_access_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError>;
     fn issue_refresh_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError>;
-    fn verify(&self, token: &str) -> Result<TokenPayload, ServiceError>;
+    async fn verify(&self, token: &str) -> Result<TokenPayload, ServiceError>;
 
     fn issue_token_pair(&self, user_id: Uuid) -> Result<TokenPair, ServiceError> {
         let (access_token, access_expires_at) = self.issue_access_token(user_id)?;

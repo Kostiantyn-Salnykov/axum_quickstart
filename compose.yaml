@@ -45,11 +45,10 @@ services:
     env_file:
       - .env
     ports:
-      - "0.0.0.0:${REDIS_PORT}:${REDIS_PORT}"  # Redis Server
-      - "0.0.0.0:${REDIS_INSIGHT_PORT}:${REDIS_INSIGHT_PORT}"  # RedisInsight
+      - "0.0.0.0:${REDIS_PORT}:6379"  # Redis Server
+      - "0.0.0.0:${REDIS_INSIGHT_PORT}:8001"  # RedisInsight
     volumes:
       - "redis_data:/data"
-      - "./redis/redis.conf:/redis-stack.conf"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       start_period: 30s

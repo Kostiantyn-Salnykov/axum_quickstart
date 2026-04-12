@@ -1,5 +1,7 @@
 pub mod login;
+pub mod logout;
 pub mod password_hasher;
 pub mod refresh;
 pub mod register;
+pub mod token_blacklist;
 pub mod token_manager;

@@ -10,3 +10,4 @@ thiserror = "2.0.18"
 uuid = { version = "1.22.0", features = ["v4"] }
 anyhow = "1.0.102"
 chrono = "0.4.44"
+tracing = "0.1.44"
