@@ -528,6 +528,7 @@ dependencies = [
  "application",
  "axum",
  "infrastructure",
+ "sea-orm",
  "tokio",
  "tracing",
  "tracing-subscriber",

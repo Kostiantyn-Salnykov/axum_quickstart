@@ -14,7 +14,7 @@ pub async fn refresh(
     payload: Result<Json<RefreshRequest>, JsonRejection>,
 ) -> Result<impl IntoResponse, AppError> {
     let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
-    let result = state.auth_refresh.refresh(payload.refresh_token).await?;
+    let result = state.auth.refresh.refresh(payload.refresh_token).await?;
 
     Ok(JsendResponse::success(
         StatusCode::OK,

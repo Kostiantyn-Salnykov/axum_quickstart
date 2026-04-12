@@ -11,3 +11,4 @@ tokio = { version = "1", features = ["full"] }
 axum = "0.8.8"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
 tracing = "0.1.44"
+sea-orm = "2.0.0-rc"

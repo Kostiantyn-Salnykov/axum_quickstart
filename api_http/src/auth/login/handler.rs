@@ -15,7 +15,8 @@ pub async fn login(
 ) -> Result<impl IntoResponse, AppError> {
     let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
     let result = state
-        .auth_login
+        .auth
+        .login
         .login(payload.email, payload.password)
         .await?;
 

@@ -7,7 +7,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
 pub async fn health_check(State(state): State<AppState>) -> Result<impl IntoResponse, AppError> {
-    let result = state.health_check.check().await?;
+    let result = state.system.health_check.check().await?;
 
     Ok(JsendResponse::success(
         StatusCode::OK,

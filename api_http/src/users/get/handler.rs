@@ -11,7 +11,7 @@ pub async fn get_by_id(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<impl IntoResponse, AppError> {
-    let result = state.get_user.get_by_id(id).await?;
+    let result = state.users.get.get_by_id(id).await?;
 
     Ok(JsendResponse::success(
         StatusCode::OK,
@@ -25,7 +25,7 @@ pub async fn get_me(
     headers: HeaderMap,
 ) -> Result<impl IntoResponse, AppError> {
     let token = bearer_token(&headers)?;
-    let result = state.get_user.get_me(token.to_string()).await?;
+    let result = state.users.get.get_me(token.to_string()).await?;
 
     Ok(JsendResponse::success(
         StatusCode::OK,

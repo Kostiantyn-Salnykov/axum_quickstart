@@ -15,7 +15,8 @@ pub async fn register(
 ) -> Result<impl IntoResponse, AppError> {
     let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
     let result = state
-        .auth_register
+        .auth
+        .register
         .register(
             payload.email,
             payload.password,
