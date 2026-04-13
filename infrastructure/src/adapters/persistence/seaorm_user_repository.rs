@@ -1,6 +1,8 @@
-use crate::orm::entities::prelude::Users as UserEntity;
-use crate::orm::entities::users;
-use crate::orm::mappers::user::{UserRow, to_create_model, to_update_model};
+use crate::adapters::persistence::seaorm::entities::prelude::Users as UserEntity;
+use crate::adapters::persistence::seaorm::entities::users;
+use crate::adapters::persistence::seaorm::mappers::user::{
+    UserRow, to_create_model, to_update_model,
+};
 use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;

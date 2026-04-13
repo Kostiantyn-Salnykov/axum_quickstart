@@ -1,7 +1,7 @@
 mod container;
 mod wiring;
 
-use infrastructure::{db::connection::connect_db, settings::Settings};
+use infrastructure::{adapters::persistence::seaorm_connection::connect_db, settings::Settings};
 use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 

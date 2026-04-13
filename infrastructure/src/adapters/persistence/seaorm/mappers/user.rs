@@ -1,5 +1,5 @@
-use crate::orm::entities::users::ActiveModel;
-pub(crate) use crate::orm::entities::users::Model as UserRow;
+use crate::adapters::persistence::seaorm::entities::users::ActiveModel;
+pub(crate) use crate::adapters::persistence::seaorm::entities::users::Model as UserRow;
 use application::errors::ServiceError;
 use chrono::{DateTime, Utc};
 use domain::user::email::Email;

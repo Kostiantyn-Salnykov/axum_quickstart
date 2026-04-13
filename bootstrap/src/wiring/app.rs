@@ -6,7 +6,7 @@ use crate::wiring::system::build_health_check_service;
 use crate::wiring::users::build_get_user_service;
 use application::auth::token_blacklist::TokenBlacklist;
 use infrastructure::adapters;
-use infrastructure::redis::client::RedisClient;
+use infrastructure::adapters::cache::redis_client::RedisClient;
 use infrastructure::settings::Settings;
 use sea_orm::DatabaseConnection;
 
@@ -27,8 +27,9 @@ pub fn build_application_container(
     let health_provider = Arc::new(
         adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
     );
-    let users = Arc::new(adapters::persistence::user_repository::SeaOrmUserRepository::new(db));
-    let password_hasher = Arc::new(adapters::security::password_hasher::ArgonPasswordHasher);
+    let users =
+        Arc::new(adapters::persistence::seaorm_user_repository::SeaOrmUserRepository::new(db));
+    let password_hasher = Arc::new(adapters::security::argon_password_hasher::ArgonPasswordHasher);
 
     let health_check = build_health_check_service(health_provider);
     let auth = build_auth_services(

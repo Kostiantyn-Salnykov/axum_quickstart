@@ -5,7 +5,7 @@ use chrono::{DateTime, Utc};
 use redis::AsyncCommands;
 use sha2::{Digest, Sha256};
 
-use crate::redis::client::RedisClient;
+use crate::adapters::cache::redis_client::RedisClient;
 
 #[derive(Clone)]
 pub struct RedisTokenBlacklist {

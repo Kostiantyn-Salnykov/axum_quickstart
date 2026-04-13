@@ -30,7 +30,7 @@ Regenerate sea_orm entities:
 ```powershell
 sea-orm-cli generate entity `
   -u "postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@${env:POSTGRES_HOST}:${env:POSTGRES_PORT}/${env:POSTGRES_DB}" `
--o infrastructure/src/orm/entities `
+-o infrastructure/src/adapters/persistence/seaorm/entities `
 --ignore-tables migrations
 ```
 
