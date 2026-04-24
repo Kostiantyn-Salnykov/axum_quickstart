@@ -1,8 +1,18 @@
 [package]
 name = "migrations"
-version = "0.1.0"
-edition = "2024"
-publish = false
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description.workspace = true
+readme.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
 
 [lib]
 name = "migrations"
@@ -11,4 +21,4 @@ path = "src/lib.rs"
 [dependencies]
 infrastructure = { path = ".." }
 sea-orm-migration = { version = "2.0.0-rc.37", features = ["runtime-tokio-rustls", "sqlx-postgres", "with-chrono", "with-uuid", "with-rust_decimal", "with-json", "dotenvy"] }
-tokio = { version = "1", features = ["full"] }
+tokio = { workspace = true, features = ["full"] }

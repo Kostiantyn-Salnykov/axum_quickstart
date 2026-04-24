@@ -1,12 +1,23 @@
 [package]
 name = "domain"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description.workspace = true
+readme.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
 
 [dependencies]
-thiserror = "2.0.18"
-serde = { version = "1.0.228", features = ["derive"] }
-chrono = "0.4.44"
-uuid = { version = "1.22.0", features = ["v4", "v7", "v8"] }
+thiserror.workspace = true
+serde = { workspace = true, features = ["derive"] }
+chrono.workspace = true
+uuid = { workspace = true, features = ["v4", "v7", "v8"] }
 email_address = "0.2.9"
 phonenumber = "0.3"

@@ -121,7 +121,7 @@ checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 
 [[package]]
 name = "api_http"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "application",
@@ -138,7 +138,7 @@ dependencies = [
 
 [[package]]
 name = "application"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -567,7 +567,7 @@ dependencies = [
 
 [[package]]
 name = "bootstrap"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "api_http",
  "application",
@@ -1062,7 +1062,7 @@ dependencies = [
 
 [[package]]
 name = "domain"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "chrono",
  "email_address",
@@ -1801,7 +1801,7 @@ dependencies = [
 
 [[package]]
 name = "infrastructure"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "application",
@@ -2080,7 +2080,7 @@ dependencies = [
 
 [[package]]
 name = "migrations"
-version = "0.1.0"
+version = "0.0.1"
 dependencies = [
  "infrastructure",
  "sea-orm-migration",

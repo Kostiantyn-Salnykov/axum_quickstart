@@ -1,17 +1,28 @@
 [package]
 name = "api_http"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+description.workspace = true
+readme.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+keywords.workspace = true
+categories.workspace = true
+publish.workspace = true
 
 [dependencies]
-axum = { version = "0.8.8",features = ["tracing", "tokio", "tower-log"] }
-serde = { version = "1.0.228", features = ["derive"] }
+axum = { workspace = true, features = ["tracing", "tokio", "tower-log"] }
+serde = { workspace = true, features = ["derive"] }
 application = { path = "../application" }
-thiserror = "2.0.18"
-anyhow = "1.0.102"
-tower-http = { version = "0.6.8",features = ["trace", "request-id", "util", "uuid"] }
-uuid = {version = "1.22.0", features = ["v4", "v7", "v8", "serde"]}
+thiserror.workspace = true
+anyhow.workspace = true
+tower-http = { version = "0.6.8", features = ["trace", "request-id", "util", "uuid"] }
+uuid = { workspace = true, features = ["v4", "v7", "v8", "serde"] }
 tower = { version = "0.5.3", features = [] }
-tracing = "0.1.44"
+tracing.workspace = true
 utoipa = { version = "5.4.0", features = ["axum_extras", "uuid"] }
 utoipa-swagger-ui = { version = "9.0.2", features = ["axum", "vendored"] }
