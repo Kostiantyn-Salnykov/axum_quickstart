@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #[utoipa::path(
     get,
     path = "/v1/health_check/",

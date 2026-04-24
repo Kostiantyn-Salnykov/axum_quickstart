@@ -1,12 +1,9 @@
 use crate::adapters::persistence::seaorm::entities::prelude::Users as UserEntity;
 use crate::adapters::persistence::seaorm::entities::users;
-use crate::adapters::persistence::seaorm::mappers::user::{
-    UserRow, to_create_model, to_update_model,
-};
+use crate::adapters::persistence::seaorm::mappers::user::{to_create_model, to_update_model};
 use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;
-use chrono::Utc;
 use domain::user::User;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use uuid::Uuid;
@@ -32,7 +29,7 @@ impl UserRepository for SeaOrmUserRepository {
                 ServiceError::internal(e)
             })?;
 
-        model.map(|m| UserRow::from(m).try_into()).transpose()
+        model.map(TryInto::try_into).transpose()
     }
 
     async fn find_by_email(&self, email: &str) -> Result<Option<User>, ServiceError> {
@@ -45,27 +42,26 @@ impl UserRepository for SeaOrmUserRepository {
                 ServiceError::internal(e)
             })?;
 
-        model.map(|m| UserRow::from(m).try_into()).transpose()
+        model.map(TryInto::try_into).transpose()
     }
 
     async fn create(&self, user: &User) -> Result<User, ServiceError> {
-        let now = Utc::now();
-        let active_model = to_create_model(user, now);
+        let active_model = to_create_model(user);
         let model = active_model.insert(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to create the user.");
             ServiceError::internal(e)
         })?;
 
-        UserRow::from(model).try_into()
+        model.try_into()
     }
 
     async fn update(&self, user: &User) -> Result<User, ServiceError> {
-        let active_model = to_update_model(user, Utc::now());
+        let active_model = to_update_model(user);
         let model = active_model.update(&self.db).await.map_err(|e| {
             tracing::error!(error = %e, "Failed to update the user.");
             ServiceError::internal(e)
         })?;
 
-        UserRow::from(model).try_into()
+        model.try_into()
     }
 }

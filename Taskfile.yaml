@@ -1,0 +1,61 @@
+version: "3"
+
+dotenv:
+  - .env
+
+tasks:
+  default:
+    desc: Run the application in local mode.
+    cmds:
+      - task: local
+
+  run:
+    desc: Run the bootstrap application.
+    cmds:
+      - cargo run
+
+  check:
+    desc: Run cargo check for the whole workspace.
+    cmds:
+      - cargo check --workspace
+
+  test:
+    desc: Run all workspace tests.
+    cmds:
+      - cargo test --workspace
+
+  fmt:
+    desc: Format the whole workspace.
+    cmds:
+      - cargo fmt --all
+
+  fmt-check:
+    desc: Check formatting without changing files.
+    cmds:
+      - cargo fmt --all --check
+
+  clippy:
+    desc: Run clippy for all workspace targets.
+    cmds:
+      - cargo clippy --workspace --all-targets -- -D warnings
+
+  pre:
+    desc: Run pre-commit checks.
+    cmds:
+      - task: fmt-check
+      - task: clippy
+      - task: test
+
+  pipeline:
+    desc: Clear terminal, format, test, build and run in release mode.
+    cmds:
+      - cargo fmt --all
+      - cargo test --workspace
+      - cargo build --workspace
+      - cargo run --release
+
+  local:
+    desc: Run the application in local mode.
+    cmds:
+      - task: pre
+      - task: run

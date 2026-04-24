@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use crate::auth::register::request::RegisterRequest;
 
 #[utoipa::path(

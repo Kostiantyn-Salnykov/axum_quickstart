@@ -47,3 +47,15 @@ sea-orm-cli migrate down -d infrastructure/migrations
 ```powershell
 sea-orm-cli migrate generate <NAME> -d infrastructure/migrations
 ```
+
+Taskfile commands:
+```powershell
+task run
+task check
+task test
+task fmt
+task fmt-check
+task clippy
+task pre
+task pipeline
+```
