@@ -1,40 +1,55 @@
 use std::sync::Arc;
 
-use api_http::state::{AppState, AuthState, SystemState, UsersState};
-use application::auth::login::inbound::Login;
-use application::auth::logout::inbound::Logout;
-use application::auth::refresh::inbound::Refresh;
-use application::auth::register::inbound::Register;
+use application::auth::login::inbound::LoginUseCase;
+use application::auth::logout::inbound::LogoutUseCase;
+use application::auth::refresh::inbound::RefreshUseCase;
+use application::auth::register::inbound::RegisterUseCase;
 use application::auth::token_manager::TokenManager;
-use application::system::health_check::inbound::HealthCheck;
-use application::users::get::inbound::GetUser;
+use application::system::health_check::inbound::HealthCheckUseCase;
+use application::users::get::inbound::GetUserUseCase;
+
+pub struct SystemServices {
+    pub health_check: Arc<dyn HealthCheckUseCase>,
+}
+
+pub struct AuthServices {
+    pub register: Arc<dyn RegisterUseCase>,
+    pub login: Arc<dyn LoginUseCase>,
+    pub logout: Arc<dyn LogoutUseCase>,
+    pub refresh: Arc<dyn RefreshUseCase>,
+    pub token_manager: Arc<dyn TokenManager>,
+}
+
+pub struct UsersServices {
+    pub get: Arc<dyn GetUserUseCase>,
+}
 
 pub struct ApplicationContainer {
-    pub state: AppState,
+    pub system: SystemServices,
+    pub auth: AuthServices,
+    pub users: UsersServices,
 }
 
 impl ApplicationContainer {
     pub fn new(
-        health_check: Arc<dyn HealthCheck>,
-        auth_register: Arc<dyn Register>,
-        auth_login: Arc<dyn Login>,
-        auth_logout: Arc<dyn Logout>,
-        auth_refresh: Arc<dyn Refresh>,
+        health_check: Arc<dyn HealthCheckUseCase>,
+        auth_register: Arc<dyn RegisterUseCase>,
+        auth_login: Arc<dyn LoginUseCase>,
+        auth_logout: Arc<dyn LogoutUseCase>,
+        auth_refresh: Arc<dyn RefreshUseCase>,
         auth_token_manager: Arc<dyn TokenManager>,
-        get_user: Arc<dyn GetUser>,
+        get_user: Arc<dyn GetUserUseCase>,
     ) -> Self {
         Self {
-            state: AppState {
-                system: SystemState { health_check },
-                auth: AuthState {
-                    register: auth_register,
-                    login: auth_login,
-                    logout: auth_logout,
-                    refresh: auth_refresh,
-                    token_manager: auth_token_manager,
-                },
-                users: UsersState { get: get_user },
+            system: SystemServices { health_check },
+            auth: AuthServices {
+                register: auth_register,
+                login: auth_login,
+                logout: auth_logout,
+                refresh: auth_refresh,
+                token_manager: auth_token_manager,
             },
+            users: UsersServices { get: get_user },
         }
     }
 }

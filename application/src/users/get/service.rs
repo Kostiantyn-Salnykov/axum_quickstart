@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::auth::token_manager::{TokenAudience, TokenManager};
 use crate::errors::ServiceError;
-use crate::users::get::inbound::GetUser;
+use crate::users::get::inbound::GetUserUseCase;
 use crate::users::get::result::UserResult;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
@@ -24,7 +24,7 @@ impl GetUserService {
 }
 
 #[async_trait]
-impl GetUser for GetUserService {
+impl GetUserUseCase for GetUserService {
     async fn get_by_id(&self, id: Uuid) -> Result<UserResult, ServiceError> {
         let user = self
             .users

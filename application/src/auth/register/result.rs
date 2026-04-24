@@ -1,4 +1,4 @@
-use domain::user::user::User;
+use domain::user::User;
 use uuid::Uuid;
 
 pub struct RegisterResult {

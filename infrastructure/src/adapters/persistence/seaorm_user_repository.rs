@@ -7,7 +7,7 @@ use application::errors::ServiceError;
 use application::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use chrono::Utc;
-use domain::user::user::User;
+use domain::user::User;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use uuid::Uuid;
 

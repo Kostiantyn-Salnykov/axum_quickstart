@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::auth::login::inbound::Login;
+use crate::auth::login::inbound::LoginUseCase;
 use crate::auth::login::result::LoginResult;
 use crate::auth::password_hasher::PasswordHasher;
 use crate::auth::token_manager::TokenManager;
@@ -31,7 +31,7 @@ impl LoginService {
 }
 
 #[async_trait]
-impl Login for LoginService {
+impl LoginUseCase for LoginService {
     async fn login(&self, email: String, password: String) -> Result<LoginResult, ServiceError> {
         let email = Email::new(&email).map_err(|_| ServiceError::InvalidCredentials)?;
         let password = password.trim();

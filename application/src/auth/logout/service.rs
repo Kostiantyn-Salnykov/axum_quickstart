@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::auth::logout::inbound::Logout;
+use crate::auth::logout::inbound::LogoutUseCase;
 use crate::auth::token_blacklist::TokenBlacklist;
 use crate::errors::ServiceError;
 use async_trait::async_trait;
@@ -18,7 +18,7 @@ impl LogoutService {
 }
 
 #[async_trait]
-impl Logout for LogoutService {
+impl LogoutUseCase for LogoutService {
     async fn logout(&self, token: String, expires_at: DateTime<Utc>) -> Result<(), ServiceError> {
         let token = token.trim();
         tracing::debug!("Attempting to revoke current bearer token.");

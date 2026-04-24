@@ -1,15 +1,15 @@
 use std::sync::Arc;
 
 use crate::auth::password_hasher::PasswordHasher;
-use crate::auth::register::inbound::Register;
+use crate::auth::register::inbound::RegisterUseCase;
 use crate::auth::register::result::RegisterResult;
 use crate::errors::ServiceError;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
+use domain::user::User;
 use domain::user::email::Email;
 use domain::user::phone::Phone;
 use domain::user::plain_password::PlainPassword;
-use domain::user::user::User;
 
 #[derive(Clone)]
 pub struct RegisterService {
@@ -27,7 +27,7 @@ impl RegisterService {
 }
 
 #[async_trait]
-impl Register for RegisterService {
+impl RegisterUseCase for RegisterService {
     async fn register(
         &self,
         email: String,

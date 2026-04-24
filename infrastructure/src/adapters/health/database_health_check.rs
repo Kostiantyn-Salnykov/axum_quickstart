@@ -1,5 +1,5 @@
 use application::errors::ServiceError;
-use application::system::health_check::outbound::DatabaseHealthCheck;
+use application::system::health_check::outbound::HealthCheckPort;
 use async_trait::async_trait;
 use sea_orm::{ConnectionTrait, DatabaseConnection, DbBackend, Statement};
 
@@ -14,8 +14,8 @@ impl SeaOrmDatabaseHealthCheck {
 }
 
 #[async_trait]
-impl DatabaseHealthCheck for SeaOrmDatabaseHealthCheck {
-    async fn current_timestamp(&self) -> Result<String, ServiceError> {
+impl HealthCheckPort for SeaOrmDatabaseHealthCheck {
+    async fn check(&self) -> Result<String, ServiceError> {
         let stmt = Statement::from_string(
             DbBackend::Postgres,
             "SELECT CURRENT_TIMESTAMP::text AS current_timestamp".to_string(),

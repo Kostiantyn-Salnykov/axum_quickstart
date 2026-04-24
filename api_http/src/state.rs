@@ -1,29 +1,29 @@
-use application::auth::login::inbound::Login;
-use application::auth::logout::inbound::Logout;
-use application::auth::refresh::inbound::Refresh;
-use application::auth::register::inbound::Register;
+use application::auth::login::inbound::LoginUseCase;
+use application::auth::logout::inbound::LogoutUseCase;
+use application::auth::refresh::inbound::RefreshUseCase;
+use application::auth::register::inbound::RegisterUseCase;
 use application::auth::token_manager::TokenManager;
-use application::system::health_check::inbound::HealthCheck;
-use application::users::get::inbound::GetUser;
+use application::system::health_check::inbound::HealthCheckUseCase;
+use application::users::get::inbound::GetUserUseCase;
 use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct SystemState {
-    pub health_check: Arc<dyn HealthCheck>,
+    pub health_check: Arc<dyn HealthCheckUseCase>,
 }
 
 #[derive(Clone)]
 pub struct AuthState {
-    pub register: Arc<dyn Register>,
-    pub login: Arc<dyn Login>,
-    pub logout: Arc<dyn Logout>,
-    pub refresh: Arc<dyn Refresh>,
+    pub register: Arc<dyn RegisterUseCase>,
+    pub login: Arc<dyn LoginUseCase>,
+    pub logout: Arc<dyn LogoutUseCase>,
+    pub refresh: Arc<dyn RefreshUseCase>,
     pub token_manager: Arc<dyn TokenManager>,
 }
 
 #[derive(Clone)]
 pub struct UsersState {
-    pub get: Arc<dyn GetUser>,
+    pub get: Arc<dyn GetUserUseCase>,
 }
 
 #[derive(Clone)]

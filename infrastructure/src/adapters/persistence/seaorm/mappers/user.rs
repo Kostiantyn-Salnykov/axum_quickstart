@@ -2,12 +2,12 @@ use crate::adapters::persistence::seaorm::entities::users::ActiveModel;
 pub(crate) use crate::adapters::persistence::seaorm::entities::users::Model as UserRow;
 use application::errors::ServiceError;
 use chrono::{DateTime, Utc};
+use domain::user::User;
 use domain::user::email::Email;
 use domain::user::password_hash::PasswordHash;
 use domain::user::phone::Phone;
 use domain::user::provider::AuthProvider;
 use domain::user::status::UserStatus;
-use domain::user::user::User;
 use sea_orm::Set;
 use std::str::FromStr;
 

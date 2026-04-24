@@ -3,7 +3,7 @@ use crate::errors::ServiceError;
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait Register: Send + Sync {
+pub trait RegisterUseCase: Send + Sync {
     async fn register(
         &self,
         email: String,

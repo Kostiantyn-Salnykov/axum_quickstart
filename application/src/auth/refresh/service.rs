@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::auth::refresh::inbound::Refresh;
+use crate::auth::refresh::inbound::RefreshUseCase;
 use crate::auth::refresh::result::RefreshResult;
 use crate::auth::token_manager::{TokenAudience, TokenManager};
 use crate::errors::ServiceError;
@@ -23,7 +23,7 @@ impl RefreshService {
 }
 
 #[async_trait]
-impl Refresh for RefreshService {
+impl RefreshUseCase for RefreshService {
     async fn refresh(&self, refresh_token: String) -> Result<RefreshResult, ServiceError> {
         let payload = self.token_manager.verify(refresh_token.trim()).await?;
         if payload.audience != TokenAudience::Refresh {

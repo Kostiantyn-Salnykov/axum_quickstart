@@ -1,23 +1,23 @@
 use std::sync::Arc;
 
-use application::auth::login::inbound::Login;
+use application::auth::login::inbound::LoginUseCase;
 use application::auth::login::service::LoginService;
-use application::auth::logout::inbound::Logout;
+use application::auth::logout::inbound::LogoutUseCase;
 use application::auth::logout::service::LogoutService;
 use application::auth::password_hasher::PasswordHasher;
-use application::auth::refresh::inbound::Refresh;
+use application::auth::refresh::inbound::RefreshUseCase;
 use application::auth::refresh::service::RefreshService;
-use application::auth::register::inbound::Register;
+use application::auth::register::inbound::RegisterUseCase;
 use application::auth::register::service::RegisterService;
 use application::auth::token_blacklist::TokenBlacklist;
 use application::auth::token_manager::TokenManager;
 use application::users::user_repository::UserRepository;
 
 pub struct AuthServices {
-    pub register: Arc<dyn Register>,
-    pub login: Arc<dyn Login>,
-    pub logout: Arc<dyn Logout>,
-    pub refresh: Arc<dyn Refresh>,
+    pub register: Arc<dyn RegisterUseCase>,
+    pub login: Arc<dyn LoginUseCase>,
+    pub logout: Arc<dyn LogoutUseCase>,
+    pub refresh: Arc<dyn RefreshUseCase>,
 }
 
 pub fn build_auth_services(

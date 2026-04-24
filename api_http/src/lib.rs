@@ -1,6 +1,14 @@
+use application::auth::login::inbound::LoginUseCase;
+use application::auth::logout::inbound::LogoutUseCase;
+use application::auth::refresh::inbound::RefreshUseCase;
+use application::auth::register::inbound::RegisterUseCase;
+use application::auth::token_manager::TokenManager;
+use application::system::health_check::inbound::HealthCheckUseCase;
+use application::users::get::inbound::GetUserUseCase;
 use axum::http::HeaderName;
 use axum::middleware::from_fn_with_state;
 use axum::{Router, http};
+use std::sync::Arc;
 use tower::ServiceBuilder;
 use tower_http::request_id::{PropagateRequestIdLayer, SetRequestIdLayer};
 use tower_http::trace::TraceLayer;
@@ -22,7 +30,38 @@ use state::AppState;
 const REQUEST_ID_HEADER: &str = "x-request-id";
 const API_VERSION: &str = "/v1";
 
-pub fn create_router(state: AppState) -> Router {
+pub struct ApiServices {
+    pub system_health_check: Arc<dyn HealthCheckUseCase>,
+    pub auth_register: Arc<dyn RegisterUseCase>,
+    pub auth_login: Arc<dyn LoginUseCase>,
+    pub auth_logout: Arc<dyn LogoutUseCase>,
+    pub auth_refresh: Arc<dyn RefreshUseCase>,
+    pub auth_token_manager: Arc<dyn TokenManager>,
+    pub users_get: Arc<dyn GetUserUseCase>,
+}
+
+impl From<ApiServices> for AppState {
+    fn from(services: ApiServices) -> Self {
+        Self {
+            system: state::SystemState {
+                health_check: services.system_health_check,
+            },
+            auth: state::AuthState {
+                register: services.auth_register,
+                login: services.auth_login,
+                logout: services.auth_logout,
+                refresh: services.auth_refresh,
+                token_manager: services.auth_token_manager,
+            },
+            users: state::UsersState {
+                get: services.users_get,
+            },
+        }
+    }
+}
+
+pub fn create_router(services: ApiServices) -> Router {
+    let state = AppState::from(services);
     let request_id_header = HeaderName::from_static(REQUEST_ID_HEADER);
     let protected_api_v1 = Router::new()
         .merge(auth::protected_router())

@@ -5,3 +5,5 @@ pub mod plain_password;
 pub mod provider;
 pub mod status;
 pub mod user;
+
+pub use user::User;
