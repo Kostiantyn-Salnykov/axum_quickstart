@@ -7,9 +7,8 @@ use std::str::FromStr;
 pub enum UserStatus {
     Unconfirmed,
     Confirmed,
-    ResetRequired,
     ForceChangePassword,
-    ExternalProvider,
+    WaitingForDeletion,
 }
 
 impl UserStatus {
@@ -17,18 +16,17 @@ impl UserStatus {
         match self {
             Self::Unconfirmed => "unconfirmed",
             Self::Confirmed => "confirmed",
-            Self::ResetRequired => "reset_required",
             Self::ForceChangePassword => "force_change_password",
-            Self::ExternalProvider => "external_provider",
+            Self::WaitingForDeletion => "waiting_for_deletion",
         }
     }
 
     pub fn is_active(&self) -> bool {
-        matches!(self, Self::Confirmed | Self::ExternalProvider)
+        matches!(self, Self::Confirmed | Self::ForceChangePassword)
     }
 
     pub fn can_login(&self) -> bool {
-        !matches!(self, Self::Unconfirmed)
+        matches!(self, Self::Confirmed | Self::ForceChangePassword)
     }
 }
 
@@ -39,9 +37,8 @@ impl FromStr for UserStatus {
         match s {
             "unconfirmed" => Ok(Self::Unconfirmed),
             "confirmed" => Ok(Self::Confirmed),
-            "reset_required" => Ok(Self::ResetRequired),
             "force_change_password" => Ok(Self::ForceChangePassword),
-            "external_provider" => Ok(Self::ExternalProvider),
+            "waiting_for_deletion" => Ok(Self::WaitingForDeletion),
             _ => Err(DomainError::UnknownUserStatus(s.to_owned())),
         }
     }

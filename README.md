@@ -50,6 +50,7 @@ sea-orm-cli migrate generate <NAME> -d infrastructure/migrations
 
 Taskfile commands:
 ```powershell
+task
 task run
 task check
 task test
@@ -58,4 +59,5 @@ task fmt-check
 task clippy
 task pre
 task pipeline
+task local
 ```

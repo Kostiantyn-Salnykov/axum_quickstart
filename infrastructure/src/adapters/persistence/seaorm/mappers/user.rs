@@ -1,3 +1,4 @@
+use crate::adapters::persistence::seaorm::entities::sea_orm_active_enums;
 use crate::adapters::persistence::seaorm::entities::users::ActiveModel;
 pub(crate) use crate::adapters::persistence::seaorm::entities::users::Model as UserRow;
 use application::errors::ServiceError;
@@ -8,7 +9,6 @@ use domain::user::phone::Phone;
 use domain::user::provider::AuthProvider;
 use domain::user::status::UserStatus;
 use sea_orm::{ActiveValue::NotSet, Set};
-use std::str::FromStr;
 
 impl TryFrom<UserRow> for User {
     type Error = ServiceError;
@@ -63,34 +63,23 @@ fn map_email(row: &UserRow) -> Result<Email, ServiceError> {
 }
 
 fn map_status(row: &UserRow) -> Result<UserStatus, ServiceError> {
-    UserStatus::from_str(&row.status).map_err(|_| {
-        tracing::error!(
-            user_id = %row.id,
-            status = %row.status,
-            "Failed to map user row: unknown status"
-        );
-        ServiceError::internal(anyhow::anyhow!(
-            "Unknown user status in database: {}",
-            row.status
-        ))
-    })
+    match row.status {
+        sea_orm_active_enums::UsersStatus::Unconfirmed => Ok(UserStatus::Unconfirmed),
+        sea_orm_active_enums::UsersStatus::Confirmed => Ok(UserStatus::Confirmed),
+        sea_orm_active_enums::UsersStatus::ForceChangePassword => {
+            Ok(UserStatus::ForceChangePassword)
+        }
+        sea_orm_active_enums::UsersStatus::WaitingForDeletion => Ok(UserStatus::WaitingForDeletion),
+    }
 }
 
 fn map_provider(row: &UserRow) -> Result<Option<AuthProvider>, ServiceError> {
-    match row.provider.as_deref() {
-        Some(raw) => AuthProvider::from_str(raw).map(Some).map_err(|_| {
-            tracing::error!(
-                user_id = %row.id,
-                provider = %raw,
-                "Failed to map user row: unknown provider"
-            );
-            ServiceError::internal(anyhow::anyhow!(
-                "Unknown auth provider in database: {}",
-                raw
-            ))
-        }),
-        None => Ok(None),
-    }
+    Ok(match row.provider {
+        Some(sea_orm_active_enums::AuthProvider::Google) => Some(AuthProvider::Google),
+        Some(sea_orm_active_enums::AuthProvider::Meta) => Some(AuthProvider::Meta),
+        Some(sea_orm_active_enums::AuthProvider::Github) => Some(AuthProvider::GitHub),
+        None => None,
+    })
 }
 
 fn user_active_model(user: &User) -> ActiveModel {
@@ -104,8 +93,20 @@ fn user_active_model(user: &User) -> ActiveModel {
             .password_hash
             .as_ref()
             .map(|hash| hash.as_ref().to_owned())),
-        status: Set(user.status.to_string()),
-        provider: Set(user.provider.as_ref().map(|provider| provider.to_string())),
+        status: Set(match user.status {
+            UserStatus::Unconfirmed => sea_orm_active_enums::UsersStatus::Unconfirmed,
+            UserStatus::Confirmed => sea_orm_active_enums::UsersStatus::Confirmed,
+            UserStatus::ForceChangePassword => {
+                sea_orm_active_enums::UsersStatus::ForceChangePassword
+            }
+            UserStatus::WaitingForDeletion => sea_orm_active_enums::UsersStatus::WaitingForDeletion,
+        }),
+        provider: Set(user.provider.as_ref().map(|provider| match provider {
+            AuthProvider::Google => sea_orm_active_enums::AuthProvider::Google,
+            AuthProvider::Meta => sea_orm_active_enums::AuthProvider::Meta,
+            AuthProvider::GitHub => sea_orm_active_enums::AuthProvider::Github,
+        })),
+        settings: NotSet,
         created_at: Set(user.created_at.into()),
         updated_at: Set(user.updated_at.into()),
     }
@@ -135,8 +136,9 @@ mod tests {
             email: "ada@example.com".to_string(),
             phone: Some("+380501234567".to_string()),
             password_hash: Some("hashed-password".to_string()),
-            status: "confirmed".to_string(),
-            provider: Some("google".to_string()),
+            status: sea_orm_active_enums::UsersStatus::Confirmed,
+            provider: Some(sea_orm_active_enums::AuthProvider::Google),
+            settings: None,
             created_at: Utc::now().into(),
             updated_at: Utc::now().into(),
         }
@@ -182,12 +184,9 @@ mod tests {
 
     #[test]
     fn rejects_unknown_status_from_database() {
-        let mut row = sample_row();
-        row.status = "not_a_real_status".to_string();
-
-        let error = User::try_from(row).expect_err("unknown status should fail mapping");
-
-        assert!(matches!(error, ServiceError::Internal { .. }));
+        let row = sample_row();
+        let user = User::try_from(row).expect("typed enum rows should always map");
+        assert_eq!(user.status, UserStatus::Confirmed);
     }
 
     #[test]

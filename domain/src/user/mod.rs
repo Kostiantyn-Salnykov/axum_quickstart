@@ -52,7 +52,7 @@ impl User {
             email,
             phone: None,
             password_hash: None,
-            status: UserStatus::ExternalProvider,
+            status: UserStatus::Confirmed,
             provider: Some(provider),
             created_at: Utc::now(),
             updated_at: Utc::now(),
@@ -76,7 +76,7 @@ impl User {
     }
 
     pub fn require_password_reset(&mut self) {
-        self.status = UserStatus::ResetRequired;
+        self.status = UserStatus::ForceChangePassword;
         self.updated_at = Utc::now();
     }
 }

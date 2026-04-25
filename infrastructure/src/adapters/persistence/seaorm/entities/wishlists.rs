@@ -9,14 +9,33 @@ pub struct Model {
     pub id: Uuid,
     pub title: String,
     pub description: String,
-    pub priority: i32,
+    pub priority: i16,
+    #[sea_orm(column_type = "JsonBinary", nullable)]
     pub settings: Option<Json>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: DateTimeWithTimeZone,
+    pub created_by: Uuid,
+    pub updated_by: Uuid,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::users::Entity",
+        from = "Column::CreatedBy",
+        to = "super::users::Column::Id",
+        on_update = "Cascade",
+        on_delete = "Restrict"
+    )]
+    Users2,
+    #[sea_orm(
+        belongs_to = "super::users::Entity",
+        from = "Column::UpdatedBy",
+        to = "super::users::Column::Id",
+        on_update = "Cascade",
+        on_delete = "Restrict"
+    )]
+    Users1,
     #[sea_orm(has_many = "super::users_wishlists::Entity")]
     UsersWishlists,
 }

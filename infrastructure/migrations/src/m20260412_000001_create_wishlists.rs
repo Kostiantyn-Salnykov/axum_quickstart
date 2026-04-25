@@ -12,12 +12,30 @@ impl MigrationTrait for Migration {
                     .table(Wishlist::Table)
                     .if_not_exists()
                     .col(uuid(Wishlist::Id).not_null())
-                    .col(string_len(Wishlist::Title, 128).not_null())
+                    .col(string_len(Wishlist::Title, 127).not_null())
                     .col(string_len(Wishlist::Description, 256).not_null())
-                    .col(integer(Wishlist::Priority).not_null())
-                    .col(json_null(Wishlist::Settings))
+                    .col(small_integer(Wishlist::Priority).not_null())
+                    .col(json_binary_null(Wishlist::Settings))
                     .col(timestamp_with_time_zone(Wishlist::CreatedAt).not_null())
                     .col(timestamp_with_time_zone(Wishlist::UpdatedAt).not_null())
+                    .col(uuid(Wishlist::CreatedBy).not_null())
+                    .col(uuid(Wishlist::UpdatedBy).not_null())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_wishlists_created_by")
+                            .from(Wishlist::Table, Wishlist::CreatedBy)
+                            .to(User::Table, User::Id)
+                            .on_delete(ForeignKeyAction::Restrict)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name("fk_wishlists_updated_by")
+                            .from(Wishlist::Table, Wishlist::UpdatedBy)
+                            .to(User::Table, User::Id)
+                            .on_delete(ForeignKeyAction::Restrict)
+                            .on_update(ForeignKeyAction::Cascade),
+                    )
                     .primary_key(Index::create().name("pk_wishlists").col(Wishlist::Id))
                     .to_owned(),
             )
@@ -46,4 +64,13 @@ enum Wishlist {
     Settings,
     CreatedAt,
     UpdatedAt,
+    CreatedBy,
+    UpdatedBy,
+}
+
+#[derive(DeriveIden)]
+enum User {
+    #[sea_orm(iden = "users")]
+    Table,
+    Id,
 }
