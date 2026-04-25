@@ -71,7 +71,7 @@ services:
       - postgresql
       - redis
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://0.0.0.0:${SERVER_PORT}/api/v1/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:${SERVER_PORT}/v1/health_check/ || exit 1"]
       start_period: 10s
       interval: 30s
       timeout: 2s

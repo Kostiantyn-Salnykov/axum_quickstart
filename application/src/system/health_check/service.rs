@@ -1,6 +1,7 @@
 use crate::errors::ServiceError;
 use crate::system::health_check::inbound::HealthCheckUseCase;
 use crate::system::health_check::outbound::HealthCheckPort;
+use crate::system::health_check::result::HealthCheckResult;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -16,7 +17,7 @@ impl HealthCheckService {
 
 #[async_trait::async_trait]
 impl HealthCheckUseCase for HealthCheckService {
-    async fn check(&self) -> Result<String, ServiceError> {
+    async fn check(&self) -> Result<HealthCheckResult, ServiceError> {
         self.provider.check().await
     }
 }

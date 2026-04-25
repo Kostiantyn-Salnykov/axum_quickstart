@@ -12,8 +12,9 @@ pub async fn health_check(State(state): State<AppState>) -> Result<impl IntoResp
     Ok(JsendResponse::success(
         StatusCode::OK,
         HealthCheckResponse {
-            postgresql_async: result,
+            postgresql_async: result.postgresql_async,
+            redis_async: result.redis_async,
         },
-        "Health check response from DB.",
+        "Health check response from PostgreSQL and Redis.",
     ))
 }

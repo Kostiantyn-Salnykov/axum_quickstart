@@ -51,7 +51,7 @@ pub struct HealthCheckSuccessResponse {
     pub status: JsendSuccessStatus,
     #[schema(example = 200)]
     pub code: u16,
-    #[schema(example = "Health check response from DB.")]
+    #[schema(example = "Health check response from PostgreSQL and Redis.")]
     pub message: Option<String>,
     pub data: crate::health_check::check::response::HealthCheckResponse,
 }

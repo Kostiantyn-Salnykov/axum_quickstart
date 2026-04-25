@@ -16,8 +16,9 @@ pub fn build_application_container(
 ) -> ApplicationContainer {
     let redis_client =
         RedisClient::new(&settings.redis_url()).expect("Failed to create Redis client.");
-    let blacklist: Arc<dyn TokenBlacklist> =
-        Arc::new(adapters::cache::redis_token_blacklist::RedisTokenBlacklist::new(redis_client));
+    let blacklist: Arc<dyn TokenBlacklist> = Arc::new(
+        adapters::cache::redis_token_blacklist::RedisTokenBlacklist::new(redis_client.clone()),
+    );
     let token_manager = Arc::new(adapters::security::jwt_token_manager::JwtTokenManager::new(
         settings.jwt_secret.as_bytes(),
         settings.access_token_ttl_minutes,
@@ -25,7 +26,10 @@ pub fn build_application_container(
         blacklist.clone(),
     ));
     let health_provider = Arc::new(
-        adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
+        adapters::health::combined_health_check::CompositeHealthCheck::new(
+            adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
+            adapters::health::redis_health_check::RedisHealthCheck::new(redis_client),
+        ),
     );
     let users =
         Arc::new(adapters::persistence::seaorm_user_repository::SeaOrmUserRepository::new(db));
