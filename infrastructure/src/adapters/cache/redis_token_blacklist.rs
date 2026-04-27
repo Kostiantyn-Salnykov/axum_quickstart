@@ -1,4 +1,4 @@
-use application::auth::token_blacklist::TokenBlacklist;
+use application::auth::token_blacklist_port::TokenBlacklistPort;
 use application::errors::ServiceError;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
@@ -19,7 +19,7 @@ impl RedisTokenBlacklist {
 }
 
 #[async_trait]
-impl TokenBlacklist for RedisTokenBlacklist {
+impl TokenBlacklistPort for RedisTokenBlacklist {
     async fn contains(&self, token: &str) -> Result<bool, ServiceError> {
         let key = blacklist_key(token);
         let mut connection = self.client.connection().map_err(|error| {

@@ -42,6 +42,7 @@ tasks:
   pre:
     desc: Run pre-commit checks.
     cmds:
+      - task: fmt
       - task: fmt-check
       - task: clippy
       - task: test
@@ -49,8 +50,7 @@ tasks:
   pipeline:
     desc: Clear terminal, format, test, build and run in release mode.
     cmds:
-      - cargo fmt --all
-      - cargo test --workspace
+      - task: pre
       - cargo build --workspace
       - cargo run --release
 

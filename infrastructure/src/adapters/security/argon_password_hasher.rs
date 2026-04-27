@@ -1,4 +1,4 @@
-use application::auth::password_hasher::PasswordHasher as AuthPasswordHasherPort;
+use application::auth::password_hasher_port::PasswordHasherPort as AuthPasswordHasherPort;
 use application::errors::ServiceError;
 use argon2::{
     Argon2, PasswordHash,

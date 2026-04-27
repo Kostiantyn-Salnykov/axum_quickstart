@@ -2,25 +2,25 @@ use std::sync::Arc;
 
 use crate::auth::login::result::LoginResult;
 use crate::auth::login::use_case::LoginUseCase;
-use crate::auth::password_hasher::PasswordHasher;
-use crate::auth::token_manager::TokenManager;
+use crate::auth::password_hasher_port::PasswordHasherPort;
+use crate::auth::token_manager_port::TokenManagerPort;
 use crate::errors::ServiceError;
-use crate::users::user_repository::UserRepository;
+use crate::users::user_repository_port::UserRepositoryPort;
 use async_trait::async_trait;
 use domain::user::email::Email;
 
 #[derive(Clone)]
 pub struct LoginService {
-    users: Arc<dyn UserRepository>,
-    password_hasher: Arc<dyn PasswordHasher>,
-    token_manager: Arc<dyn TokenManager>,
+    users: Arc<dyn UserRepositoryPort>,
+    password_hasher: Arc<dyn PasswordHasherPort>,
+    token_manager: Arc<dyn TokenManagerPort>,
 }
 
 impl LoginService {
     pub fn new(
-        users: Arc<dyn UserRepository>,
-        password_hasher: Arc<dyn PasswordHasher>,
-        token_manager: Arc<dyn TokenManager>,
+        users: Arc<dyn UserRepositoryPort>,
+        password_hasher: Arc<dyn PasswordHasherPort>,
+        token_manager: Arc<dyn TokenManagerPort>,
     ) -> Self {
         Self {
             users,

@@ -2,7 +2,7 @@ use crate::adapters::persistence::seaorm::entities::prelude::Users as UserEntity
 use crate::adapters::persistence::seaorm::entities::users;
 use crate::adapters::persistence::seaorm::mappers::user::{to_create_model, to_update_model};
 use application::errors::ServiceError;
-use application::users::user_repository::UserRepository;
+use application::users::user_repository_port::UserRepositoryPort;
 use async_trait::async_trait;
 use domain::user::User;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
@@ -19,7 +19,7 @@ impl SeaOrmUserRepository {
 }
 
 #[async_trait]
-impl UserRepository for SeaOrmUserRepository {
+impl UserRepositoryPort for SeaOrmUserRepository {
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, ServiceError> {
         let model = UserEntity::find_by_id(id)
             .one(&self.db)

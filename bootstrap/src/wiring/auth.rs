@@ -4,14 +4,14 @@ use application::auth::login::service::LoginService;
 use application::auth::login::use_case::LoginUseCase;
 use application::auth::logout::service::LogoutService;
 use application::auth::logout::use_case::LogoutUseCase;
-use application::auth::password_hasher::PasswordHasher;
+use application::auth::password_hasher_port::PasswordHasherPort;
 use application::auth::refresh::service::RefreshService;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::service::RegisterService;
 use application::auth::register::use_case::RegisterUseCase;
-use application::auth::token_blacklist::TokenBlacklist;
-use application::auth::token_manager::TokenManager;
-use application::users::user_repository::UserRepository;
+use application::auth::token_blacklist_port::TokenBlacklistPort;
+use application::auth::token_manager_port::TokenManagerPort;
+use application::users::user_repository_port::UserRepositoryPort;
 
 pub struct AuthServices {
     pub register: Arc<dyn RegisterUseCase>,
@@ -21,10 +21,10 @@ pub struct AuthServices {
 }
 
 pub fn build_auth_services(
-    users: Arc<dyn UserRepository>,
-    password_hasher: Arc<dyn PasswordHasher>,
-    token_manager: Arc<dyn TokenManager>,
-    blacklist: Arc<dyn TokenBlacklist>,
+    users: Arc<dyn UserRepositoryPort>,
+    password_hasher: Arc<dyn PasswordHasherPort>,
+    token_manager: Arc<dyn TokenManagerPort>,
+    blacklist: Arc<dyn TokenBlacklistPort>,
 ) -> AuthServices {
     AuthServices {
         register: Arc::new(RegisterService::new(users.clone(), password_hasher.clone())),

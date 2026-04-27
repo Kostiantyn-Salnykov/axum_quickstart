@@ -1,21 +1,24 @@
 use std::sync::Arc;
 
-use crate::auth::token_manager::{TokenAudience, TokenManager};
+use crate::auth::token_manager_port::{TokenAudience, TokenManagerPort};
 use crate::errors::ServiceError;
 use crate::users::get::result::UserResult;
 use crate::users::get::use_case::GetUserUseCase;
-use crate::users::user_repository::UserRepository;
+use crate::users::user_repository_port::UserRepositoryPort;
 use async_trait::async_trait;
 use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct GetUserService {
-    users: Arc<dyn UserRepository>,
-    token_manager: Arc<dyn TokenManager>,
+    users: Arc<dyn UserRepositoryPort>,
+    token_manager: Arc<dyn TokenManagerPort>,
 }
 
 impl GetUserService {
-    pub fn new(users: Arc<dyn UserRepository>, token_manager: Arc<dyn TokenManager>) -> Self {
+    pub fn new(
+        users: Arc<dyn UserRepositoryPort>,
+        token_manager: Arc<dyn TokenManagerPort>,
+    ) -> Self {
         Self {
             users,
             token_manager,

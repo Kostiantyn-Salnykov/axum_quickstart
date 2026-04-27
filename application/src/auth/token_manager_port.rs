@@ -45,7 +45,7 @@ pub struct TokenPair {
 }
 
 #[async_trait]
-pub trait TokenManager: Send + Sync {
+pub trait TokenManagerPort: Send + Sync {
     fn issue_access_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError>;
     fn issue_refresh_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError>;
     async fn verify(&self, token: &str) -> Result<TokenPayload, ServiceError>;

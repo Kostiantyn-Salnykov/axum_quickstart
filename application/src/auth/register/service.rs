@@ -1,10 +1,10 @@
 use std::sync::Arc;
 
-use crate::auth::password_hasher::PasswordHasher;
+use crate::auth::password_hasher_port::PasswordHasherPort;
 use crate::auth::register::result::RegisterResult;
 use crate::auth::register::use_case::RegisterUseCase;
 use crate::errors::ServiceError;
-use crate::users::user_repository::UserRepository;
+use crate::users::user_repository_port::UserRepositoryPort;
 use async_trait::async_trait;
 use domain::user::User;
 use domain::user::email::Email;
@@ -13,12 +13,15 @@ use domain::user::plain_password::PlainPassword;
 
 #[derive(Clone)]
 pub struct RegisterService {
-    users: Arc<dyn UserRepository>,
-    password_hasher: Arc<dyn PasswordHasher>,
+    users: Arc<dyn UserRepositoryPort>,
+    password_hasher: Arc<dyn PasswordHasherPort>,
 }
 
 impl RegisterService {
-    pub fn new(users: Arc<dyn UserRepository>, password_hasher: Arc<dyn PasswordHasher>) -> Self {
+    pub fn new(
+        users: Arc<dyn UserRepositoryPort>,
+        password_hasher: Arc<dyn PasswordHasherPort>,
+    ) -> Self {
         Self {
             users,
             password_hasher,

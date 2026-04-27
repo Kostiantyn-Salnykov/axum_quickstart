@@ -2,7 +2,7 @@ use application::auth::login::use_case::LoginUseCase;
 use application::auth::logout::use_case::LogoutUseCase;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::use_case::RegisterUseCase;
-use application::auth::token_manager::TokenManager;
+use application::auth::token_manager_port::TokenManagerPort;
 use application::system::health_check::use_case::HealthCheckUseCase;
 use application::users::get::use_case::GetUserUseCase;
 use std::sync::Arc;
@@ -18,7 +18,7 @@ pub struct AuthState {
     pub login: Arc<dyn LoginUseCase>,
     pub logout: Arc<dyn LogoutUseCase>,
     pub refresh: Arc<dyn RefreshUseCase>,
-    pub token_manager: Arc<dyn TokenManager>,
+    pub token_manager: Arc<dyn TokenManagerPort>,
 }
 
 #[derive(Clone)]

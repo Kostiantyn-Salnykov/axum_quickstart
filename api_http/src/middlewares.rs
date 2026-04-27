@@ -1,6 +1,6 @@
 use crate::errors::AppError;
 use crate::state::AppState;
-use application::auth::token_manager::TokenPayload;
+use application::auth::token_manager_port::TokenPayload;
 use axum::extract::Request;
 use axum::http;
 use axum::middleware::Next;

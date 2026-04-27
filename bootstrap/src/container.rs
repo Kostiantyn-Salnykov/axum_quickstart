@@ -4,7 +4,7 @@ use application::auth::login::use_case::LoginUseCase;
 use application::auth::logout::use_case::LogoutUseCase;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::use_case::RegisterUseCase;
-use application::auth::token_manager::TokenManager;
+use application::auth::token_manager_port::TokenManagerPort;
 use application::system::health_check::use_case::HealthCheckUseCase;
 use application::users::get::use_case::GetUserUseCase;
 
@@ -17,7 +17,7 @@ pub struct AuthServices {
     pub login: Arc<dyn LoginUseCase>,
     pub logout: Arc<dyn LogoutUseCase>,
     pub refresh: Arc<dyn RefreshUseCase>,
-    pub token_manager: Arc<dyn TokenManager>,
+    pub token_manager: Arc<dyn TokenManagerPort>,
 }
 
 pub struct UsersServices {
@@ -37,7 +37,7 @@ impl ApplicationContainer {
         auth_login: Arc<dyn LoginUseCase>,
         auth_logout: Arc<dyn LogoutUseCase>,
         auth_refresh: Arc<dyn RefreshUseCase>,
-        auth_token_manager: Arc<dyn TokenManager>,
+        auth_token_manager: Arc<dyn TokenManagerPort>,
         get_user: Arc<dyn GetUserUseCase>,
     ) -> Self {
         Self {

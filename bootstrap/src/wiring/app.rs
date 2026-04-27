@@ -4,7 +4,7 @@ use crate::container::ApplicationContainer;
 use crate::wiring::auth::build_auth_services;
 use crate::wiring::system::build_health_check_service;
 use crate::wiring::users::build_get_user_service;
-use application::auth::token_blacklist::TokenBlacklist;
+use application::auth::token_blacklist_port::TokenBlacklistPort;
 use infrastructure::adapters;
 use infrastructure::adapters::cache::redis_client::RedisClient;
 use infrastructure::settings::Settings;
@@ -16,7 +16,7 @@ pub fn build_application_container(
 ) -> ApplicationContainer {
     let redis_client =
         RedisClient::new(&settings.redis_url()).expect("Failed to create Redis client.");
-    let blacklist: Arc<dyn TokenBlacklist> = Arc::new(
+    let blacklist: Arc<dyn TokenBlacklistPort> = Arc::new(
         adapters::cache::redis_token_blacklist::RedisTokenBlacklist::new(redis_client.clone()),
     );
     let token_manager = Arc::new(adapters::security::jwt_token_manager::JwtTokenManager::new(

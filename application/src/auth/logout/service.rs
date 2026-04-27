@@ -1,18 +1,18 @@
 use std::sync::Arc;
 
 use crate::auth::logout::use_case::LogoutUseCase;
-use crate::auth::token_blacklist::TokenBlacklist;
+use crate::auth::token_blacklist_port::TokenBlacklistPort;
 use crate::errors::ServiceError;
 use async_trait::async_trait;
 use chrono::{DateTime, Utc};
 
 #[derive(Clone)]
 pub struct LogoutService {
-    blacklist: Arc<dyn TokenBlacklist>,
+    blacklist: Arc<dyn TokenBlacklistPort>,
 }
 
 impl LogoutService {
-    pub fn new(blacklist: Arc<dyn TokenBlacklist>) -> Self {
+    pub fn new(blacklist: Arc<dyn TokenBlacklistPort>) -> Self {
         Self { blacklist }
     }
 }

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use application::auth::token_blacklist::TokenBlacklist;
-use application::auth::token_manager::{TokenAudience, TokenManager, TokenPayload};
+use application::auth::token_blacklist_port::TokenBlacklistPort;
+use application::auth::token_manager_port::{TokenAudience, TokenManagerPort, TokenPayload};
 use application::errors::ServiceError;
 use async_trait::async_trait;
 use chrono::{DateTime, Duration, Utc};
@@ -15,7 +15,7 @@ pub struct JwtTokenManager {
     decoding_key: DecodingKey,
     access_ttl: Duration,
     refresh_ttl: Duration,
-    blacklist: Arc<dyn TokenBlacklist>,
+    blacklist: Arc<dyn TokenBlacklistPort>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -31,7 +31,7 @@ impl JwtTokenManager {
         secret: impl AsRef<[u8]>,
         access_ttl_minutes: i64,
         refresh_ttl_days: i64,
-        blacklist: Arc<dyn TokenBlacklist>,
+        blacklist: Arc<dyn TokenBlacklistPort>,
     ) -> Self {
         Self {
             encoding_key: EncodingKey::from_secret(secret.as_ref()),
@@ -76,7 +76,7 @@ impl JwtTokenManager {
 }
 
 #[async_trait]
-impl TokenManager for JwtTokenManager {
+impl TokenManagerPort for JwtTokenManager {
     fn issue_access_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError> {
         self.issue_token(user_id, TokenAudience::Access, self.access_ttl)
     }

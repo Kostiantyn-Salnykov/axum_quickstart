@@ -2,7 +2,7 @@ use application::auth::login::use_case::LoginUseCase;
 use application::auth::logout::use_case::LogoutUseCase;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::use_case::RegisterUseCase;
-use application::auth::token_manager::TokenManager;
+use application::auth::token_manager_port::TokenManagerPort;
 use application::system::health_check::use_case::HealthCheckUseCase;
 use application::users::get::use_case::GetUserUseCase;
 use axum::http::HeaderName;
@@ -36,7 +36,7 @@ pub struct ApiServices {
     pub auth_login: Arc<dyn LoginUseCase>,
     pub auth_logout: Arc<dyn LogoutUseCase>,
     pub auth_refresh: Arc<dyn RefreshUseCase>,
-    pub auth_token_manager: Arc<dyn TokenManager>,
+    pub auth_token_manager: Arc<dyn TokenManagerPort>,
     pub users_get: Arc<dyn GetUserUseCase>,
 }
 
