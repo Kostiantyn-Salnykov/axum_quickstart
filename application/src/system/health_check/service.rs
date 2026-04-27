@@ -1,7 +1,7 @@
 use crate::errors::ServiceError;
-use crate::system::health_check::inbound::HealthCheckUseCase;
-use crate::system::health_check::outbound::HealthCheckPort;
+use crate::system::health_check::port::HealthCheckPort;
 use crate::system::health_check::result::HealthCheckResult;
+use crate::system::health_check::use_case::HealthCheckUseCase;
 use std::sync::Arc;
 
 #[derive(Clone)]

@@ -1,4 +1,4 @@
-pub mod inbound;
-pub mod outbound;
+pub mod port;
 pub mod result;
 pub mod service;
+pub mod use_case;

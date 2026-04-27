@@ -2,8 +2,8 @@ use std::sync::Arc;
 
 use crate::auth::token_manager::{TokenAudience, TokenManager};
 use crate::errors::ServiceError;
-use crate::users::get::inbound::GetUserUseCase;
 use crate::users::get::result::UserResult;
+use crate::users::get::use_case::GetUserUseCase;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;
 use uuid::Uuid;

@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::auth::login::inbound::LoginUseCase;
 use crate::auth::login::result::LoginResult;
+use crate::auth::login::use_case::LoginUseCase;
 use crate::auth::password_hasher::PasswordHasher;
 use crate::auth::token_manager::TokenManager;
 use crate::errors::ServiceError;
