@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use crate::auth::password_hasher::PasswordHasher;
-use crate::auth::register::inbound::RegisterUseCase;
 use crate::auth::register::result::RegisterResult;
+use crate::auth::register::use_case::RegisterUseCase;
 use crate::errors::ServiceError;
 use crate::users::user_repository::UserRepository;
 use async_trait::async_trait;

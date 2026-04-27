@@ -1,5 +1,5 @@
 use application::errors::ServiceError;
-use application::system::health_check::outbound::HealthCheckPort;
+use application::system::health_check::port::HealthCheckPort;
 use application::system::health_check::result::HealthCheckResult;
 use async_trait::async_trait;
 

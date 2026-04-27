@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::auth::logout::inbound::LogoutUseCase;
+use crate::auth::logout::use_case::LogoutUseCase;
 use crate::auth::token_blacklist::TokenBlacklist;
 use crate::errors::ServiceError;
 use async_trait::async_trait;

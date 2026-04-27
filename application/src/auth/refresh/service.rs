@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::auth::refresh::inbound::RefreshUseCase;
 use crate::auth::refresh::result::RefreshResult;
+use crate::auth::refresh::use_case::RefreshUseCase;
 use crate::auth::token_manager::{TokenAudience, TokenManager};
 use crate::errors::ServiceError;
 use crate::users::user_repository::UserRepository;

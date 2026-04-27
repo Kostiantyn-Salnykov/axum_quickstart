@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use application::auth::login::inbound::LoginUseCase;
-use application::auth::logout::inbound::LogoutUseCase;
-use application::auth::refresh::inbound::RefreshUseCase;
-use application::auth::register::inbound::RegisterUseCase;
+use application::auth::login::use_case::LoginUseCase;
+use application::auth::logout::use_case::LogoutUseCase;
+use application::auth::refresh::use_case::RefreshUseCase;
+use application::auth::register::use_case::RegisterUseCase;
 use application::auth::token_manager::TokenManager;
-use application::system::health_check::inbound::HealthCheckUseCase;
-use application::users::get::inbound::GetUserUseCase;
+use application::system::health_check::use_case::HealthCheckUseCase;
+use application::users::get::use_case::GetUserUseCase;
 
 pub struct SystemServices {
     pub health_check: Arc<dyn HealthCheckUseCase>,
