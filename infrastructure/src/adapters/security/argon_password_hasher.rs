@@ -5,9 +5,9 @@ use argon2::{
     password_hash::{PasswordHasher, PasswordVerifier},
 };
 
-pub struct ArgonPasswordHasher;
+pub struct ArgonPasswordHasherAdapter;
 
-impl ArgonPasswordHasher {
+impl ArgonPasswordHasherAdapter {
     pub fn hash(password: &str) -> Result<String, argon2::password_hash::Error> {
         let hash = Argon2::default().hash_password(password.as_bytes())?;
         Ok(hash.to_string())
@@ -21,7 +21,7 @@ impl ArgonPasswordHasher {
     }
 }
 
-impl AuthPasswordHasherPort for ArgonPasswordHasher {
+impl AuthPasswordHasherPort for ArgonPasswordHasherAdapter {
     fn hash(&self, plaintext: &str) -> Result<String, ServiceError> {
         Self::hash(plaintext).map_err(ServiceError::internal)
     }

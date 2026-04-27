@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Clone)]
-pub struct JwtTokenManager {
+pub struct JwtTokenManagerAdapter {
     encoding_key: EncodingKey,
     decoding_key: DecodingKey,
     access_ttl: Duration,
@@ -26,7 +26,7 @@ struct Claims {
     iat: i64,
 }
 
-impl JwtTokenManager {
+impl JwtTokenManagerAdapter {
     pub fn new(
         secret: impl AsRef<[u8]>,
         access_ttl_minutes: i64,
@@ -76,7 +76,7 @@ impl JwtTokenManager {
 }
 
 #[async_trait]
-impl TokenManagerPort for JwtTokenManager {
+impl TokenManagerPort for JwtTokenManagerAdapter {
     fn issue_access_token(&self, user_id: Uuid) -> Result<(String, DateTime<Utc>), ServiceError> {
         self.issue_token(user_id, TokenAudience::Access, self.access_ttl)
     }

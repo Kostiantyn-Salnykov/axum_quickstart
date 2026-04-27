@@ -17,23 +17,29 @@ pub fn build_application_container(
     let redis_client =
         RedisClient::new(&settings.redis_url()).expect("Failed to create Redis client.");
     let blacklist: Arc<dyn TokenBlacklistPort> = Arc::new(
-        adapters::cache::redis_token_blacklist::RedisTokenBlacklist::new(redis_client.clone()),
+        adapters::cache::redis_token_blacklist::RedisTokenBlacklistAdapter::new(
+            redis_client.clone(),
+        ),
     );
-    let token_manager = Arc::new(adapters::security::jwt_token_manager::JwtTokenManager::new(
-        settings.jwt_secret.as_bytes(),
-        settings.access_token_ttl_minutes,
-        settings.refresh_token_ttl_days,
-        blacklist.clone(),
-    ));
+    let token_manager = Arc::new(
+        adapters::security::jwt_token_manager::JwtTokenManagerAdapter::new(
+            settings.jwt_secret.as_bytes(),
+            settings.access_token_ttl_minutes,
+            settings.refresh_token_ttl_days,
+            blacklist.clone(),
+        ),
+    );
     let health_provider = Arc::new(
         adapters::health::combined_health_check::CompositeHealthCheck::new(
             adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
             adapters::health::redis_health_check::RedisHealthCheck::new(redis_client),
         ),
     );
-    let users =
-        Arc::new(adapters::persistence::seaorm_user_repository::SeaOrmUserRepository::new(db));
-    let password_hasher = Arc::new(adapters::security::argon_password_hasher::ArgonPasswordHasher);
+    let users = Arc::new(
+        adapters::persistence::seaorm_user_repository::SeaOrmUserRepositoryAdapter::new(db),
+    );
+    let password_hasher =
+        Arc::new(adapters::security::argon_password_hasher::ArgonPasswordHasherAdapter);
 
     let health_check = build_health_check_service(health_provider);
     let auth = build_auth_services(

@@ -8,18 +8,18 @@ use sha2::{Digest, Sha256};
 use crate::adapters::cache::redis_client::RedisClient;
 
 #[derive(Clone)]
-pub struct RedisTokenBlacklist {
+pub struct RedisTokenBlacklistAdapter {
     client: RedisClient,
 }
 
-impl RedisTokenBlacklist {
+impl RedisTokenBlacklistAdapter {
     pub fn new(client: RedisClient) -> Self {
         Self { client }
     }
 }
 
 #[async_trait]
-impl TokenBlacklistPort for RedisTokenBlacklist {
+impl TokenBlacklistPort for RedisTokenBlacklistAdapter {
     async fn contains(&self, token: &str) -> Result<bool, ServiceError> {
         let key = blacklist_key(token);
         let mut connection = self.client.connection().map_err(|error| {

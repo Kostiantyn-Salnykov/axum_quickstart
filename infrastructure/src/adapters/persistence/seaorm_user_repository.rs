@@ -8,18 +8,18 @@ use domain::user::User;
 use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use uuid::Uuid;
 
-pub struct SeaOrmUserRepository {
+pub struct SeaOrmUserRepositoryAdapter {
     db: DatabaseConnection,
 }
 
-impl SeaOrmUserRepository {
+impl SeaOrmUserRepositoryAdapter {
     pub fn new(db: DatabaseConnection) -> Self {
         Self { db }
     }
 }
 
 #[async_trait]
-impl UserRepositoryPort for SeaOrmUserRepository {
+impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
     async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, ServiceError> {
         let model = UserEntity::find_by_id(id)
             .one(&self.db)
