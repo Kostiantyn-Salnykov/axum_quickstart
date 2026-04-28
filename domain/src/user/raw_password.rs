@@ -1,9 +1,9 @@
 use crate::errors::DomainError;
 
 #[derive(Debug, Clone)]
-pub struct PlainPassword(String);
+pub struct RawPassword(String);
 
-impl PlainPassword {
+impl RawPassword {
     const MIN_LENGTH: usize = 8;
     const SPECIAL_CHARS: &'static str = "!@#$%^&*()_+-=[]{}|;':\",.<>?/ ";
 
@@ -49,7 +49,7 @@ impl PlainPassword {
     }
 }
 
-impl AsRef<str> for PlainPassword {
+impl AsRef<str> for RawPassword {
     fn as_ref(&self) -> &str {
         self.as_str()
     }

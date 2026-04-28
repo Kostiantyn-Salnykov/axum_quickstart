@@ -9,7 +9,7 @@ use async_trait::async_trait;
 use domain::user::User;
 use domain::user::email::Email;
 use domain::user::phone::Phone;
-use domain::user::plain_password::PlainPassword;
+use domain::user::raw_password::RawPassword;
 
 #[derive(Clone)]
 pub struct RegisterService {
@@ -46,7 +46,7 @@ impl RegisterUseCase for RegisterService {
             .map(|value| Phone::new(&value).map_err(|e| ServiceError::Validation(e.to_string())))
             .transpose()?;
         let password =
-            PlainPassword::new(&password).map_err(|e| ServiceError::Validation(e.to_string()))?;
+            RawPassword::new(&password).map_err(|e| ServiceError::Validation(e.to_string()))?;
 
         if self.users.find_by_email(email.as_str()).await?.is_some() {
             return Err(ServiceError::Conflict(
