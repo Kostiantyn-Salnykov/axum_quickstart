@@ -28,3 +28,24 @@ impl AsRef<str> for Phone {
         self.as_str()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn normalizes_valid_phone_to_e164() {
+        let phone = Phone::new("+1 (202) 555-0188").unwrap();
+
+        assert_eq!(phone.as_str(), "+12025550188");
+        assert_eq!(phone.as_ref(), "+12025550188");
+        assert_eq!(phone.to_string(), "+12025550188");
+    }
+
+    #[test]
+    fn rejects_invalid_phone() {
+        let result = Phone::new("abc");
+
+        assert!(matches!(result, Err(DomainError::InvalidPhone)));
+    }
+}

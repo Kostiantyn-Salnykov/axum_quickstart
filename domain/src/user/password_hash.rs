@@ -18,3 +18,18 @@ impl From<PasswordHash> for String {
         value.0
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn converts_from_and_into_string() {
+        let hash = PasswordHash::from("hashed-password".to_string());
+
+        assert_eq!(hash.as_ref(), "hashed-password");
+
+        let owned: String = hash.into();
+        assert_eq!(owned, "hashed-password");
+    }
+}

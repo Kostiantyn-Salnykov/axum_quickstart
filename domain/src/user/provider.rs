@@ -37,3 +37,35 @@ impl Display for AuthProvider {
         f.write_str(self.as_str())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_known_provider() {
+        let provider = AuthProvider::from_str("github").unwrap();
+
+        assert_eq!(provider, AuthProvider::GitHub);
+        assert_eq!(provider.as_str(), "github");
+        assert_eq!(provider.to_string(), "github");
+    }
+
+    #[test]
+    fn exposes_all_provider_labels() {
+        assert_eq!(AuthProvider::Google.as_str(), "google");
+        assert_eq!(AuthProvider::Meta.as_str(), "meta");
+        assert_eq!(AuthProvider::GitHub.as_str(), "github");
+    }
+
+    #[test]
+    fn rejects_unknown_provider() {
+        let result = AuthProvider::from_str("twitter");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::UnknownAuthProvider(value))
+            if value == "twitter"
+        ));
+    }
+}

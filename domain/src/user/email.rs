@@ -41,3 +41,32 @@ impl FromStr for Email {
         Self::new(s)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_valid_email_and_trims_whitespace() {
+        let email = Email::new("  user@example.com  ").unwrap();
+
+        assert_eq!(email.as_str(), "user@example.com");
+        assert_eq!(email.as_ref(), "user@example.com");
+        assert_eq!(email.to_string(), "user@example.com");
+        assert_eq!(email.to_owned(), "user@example.com");
+    }
+
+    #[test]
+    fn parses_from_str() {
+        let email = "user@example.com".parse::<Email>().unwrap();
+
+        assert_eq!(email.as_str(), "user@example.com");
+    }
+
+    #[test]
+    fn rejects_invalid_email() {
+        let result = Email::new("not-an-email");
+
+        assert!(matches!(result, Err(DomainError::InvalidEmail)));
+    }
+}

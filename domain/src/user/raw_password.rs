@@ -54,3 +54,71 @@ impl AsRef<str> for RawPassword {
         self.as_str()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn accepts_valid_password_and_trims_whitespace() {
+        let password = RawPassword::new("  Strong1!  ").unwrap();
+
+        assert_eq!(password.as_str(), "Strong1!");
+        assert_eq!(password.as_ref(), "Strong1!");
+    }
+
+    #[test]
+    fn rejects_password_shorter_than_minimum_length() {
+        let result = RawPassword::new("Aa1!");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::InvalidPassword(message))
+            if message == "Password must be at least 8 characters long."
+        ));
+    }
+
+    #[test]
+    fn rejects_password_without_letters() {
+        let result = RawPassword::new("1234567!");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::InvalidPassword(message))
+            if message == "Password must contain letters."
+        ));
+    }
+
+    #[test]
+    fn rejects_password_without_uppercase_letter() {
+        let result = RawPassword::new("password1!");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::InvalidPassword(message))
+            if message == "Password must contain at least one uppercase letter."
+        ));
+    }
+
+    #[test]
+    fn rejects_password_without_number() {
+        let result = RawPassword::new("Password!");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::InvalidPassword(message))
+            if message == "Password must contain at least one number."
+        ));
+    }
+
+    #[test]
+    fn rejects_password_without_special_character() {
+        let result = RawPassword::new("Password1");
+
+        assert!(matches!(
+            result,
+            Err(DomainError::InvalidPassword(message))
+            if message.contains("Password must contain at least one special character")
+        ));
+    }
+}
