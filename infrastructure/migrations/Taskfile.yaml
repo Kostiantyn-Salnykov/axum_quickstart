@@ -1,38 +1,64 @@
 version: "3"
 
 tasks:
+  default:
+    cmds:
+      - task: up
+
   up:
-    desc: "Apply pending migrations."
+    desc: "↗️ Apply pending migrations."
+    aliases:
+      - "+"
     cmds:
       - cargo run -p migrations -- up {{.CLI_ARGS}}
 
   down:
-    desc: "Roll back applied migrations."
+    desc: "⛔️ Roll back applied migrations."
+    aliases:
+      - "-"
+    prompt:
+      - "⛔️ Are you sure?"
+      - "⚠️ This deletes the data and schemas defined in the migration files!"
     cmds:
       - cargo run -p migrations -- down {{.CLI_ARGS}}
 
   fresh:
-    desc: "Drop all tables and reapply migrations."
+    desc: "⛔️ Drop all tables and reapply migrations."
+    prompt:
+      - "⛔️ Are you sure?"
+      - "⚠️ This deletes the data!"
     cmds:
       - cargo run -p migrations -- fresh
 
+  refresh:
+    desc: "⛔️ Rollback all applied migrations, then reapply all migrations."
+    prompt:
+      - "⛔️ Are you sure?"
+      - "⚠️ This deletes the data!"
+    cmds:
+      - cargo run -p migrations -- refresh
+
   reset:
-    desc: "Roll back all applied migrations."
+    desc: "⛔️ Roll back all applied migrations 
+    (ℹ️ The `migrations` table also would be deleted.)."
+    prompt:
+      - "⛔️ Are you sure?"
+      - "⚠️ This deletes the data and schemas defined in the migration files!"
     cmds:
       - cargo run -p migrations -- reset
 
   status:
-    desc: "Show pending migrations."
+    desc: "ℹ️ Show pending migrations."
     cmds:
       - cargo run -p migrations -- status
 
   test:
-    desc: "Run migration integration tests against a local PostgreSQL instance."
+    desc: "🧪 Run migration integration tests against a local PostgreSQL instance."
     cmds:
       - cargo test -p migrations --test migration_flow -- --test-threads=1
 
   generate:
-    desc: "Generate a new SeaORM migration file. Usage: task migrations:generate NAME=create_posts"
+    desc: "🔄 Generate a new SeaORM migration file. Usage: `task migrations:generate NAME=create_posts`."
     requires:
       vars: [NAME]
     cmds:

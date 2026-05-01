@@ -5,6 +5,11 @@
 Rename example.env to .env and fill in the values.
 
 ### Main commands:
+📚List all available commands:
+```shell
+task help
+```
+
 🖥️Run the application in local mode:
 ```shell
 task
@@ -33,11 +38,6 @@ task test
 🧹Format the whole workspace
 ```shell
 task fmt
-```
-
-✅Check formatting without changing files
-```shell
-task fmt-check
 ```
 
 🛡️Run pre-commit checks
@@ -78,16 +78,25 @@ task mig:up
 task mig:down
 ```
 (⚠️deletes the data and schemas defined in the migration files.)
+(ℹ️The `migrations` table still exists.)
 
-⛔Clean database migration:
-```shell
-task mig:reset
-```
-(⚠️deletes the data and schemas defined in the migration files.)
-
-
-⛔Down to 0 and up to the latest:
+⛔Drop all tables from the database, then reapply all migrations:
 ```shell
 task mig:fresh
 ```
 (⚠️deletes the data)
+
+
+⛔Rollback all applied migrations, then reapply all migrations:
+```shell
+task mig:refresh
+```
+(⚠️deletes the data)
+
+
+⛔Rollback database migration:
+```shell
+task mig:reset
+```
+(⚠️deletes the data and schemas defined in the migration files.)
+(ℹ️The `migrations` table also deleted.)

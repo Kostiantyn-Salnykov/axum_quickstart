@@ -10,58 +10,49 @@ includes:
 
 tasks:
   default:
-    desc: Run the application in local mode.
-    cmds:
-      - task: local
+    desc: "🖥️ Run the application in local mode (Actually runs the `task local`)."
+    deps: ["local"]
 
   run:
-    desc: Run the bootstrap application.
+    desc: "🖥️ Run the bootstrap application."
     cmds:
       - cargo run
 
   check:
-    desc: Run cargo check for the whole workspace.
+    desc: "🔎 Run cargo check for the whole workspace."
     cmds:
       - cargo check --workspace
       - cargo clippy --workspace --all-targets -- -D warnings
 
   test:
-    desc: Run all workspace tests.
+    desc: "🧪 Run all workspace tests."
     cmds:
       - cargo test --workspace
 
   fmt:
-    desc: Format the whole workspace.
+    desc: "🧹 Format the whole workspace."
     cmds:
       - cargo fmt --all
 
-  fmt-check:
-    desc: Check formatting without changing files.
-    cmds:
-      - cargo fmt --all --check
-
   pre:
-    desc: Run pre-commit checks.
-    cmds:
-      - task: fmt
-      - task: check
-      - task: test
+    desc: "🛡️ Run pre-commit checks."
+    deps: ["fmt", "check", "test"]
 
   pipeline:
-    desc: Clear terminal, format, test, build and run in release mode.
+    desc: "⏩ Clear terminal, format, test, build and run in release mode."
     cmds:
       - task: pre
       - cargo build --workspace
       - cargo run --release
 
   local:
-    desc: Run the application in local mode.
+    desc: "🖥️ Run the application in local mode."
+    deps: ["pre"]
     cmds:
-      - task: pre
       - task: run
 
   entity:
-    desc: "Regenerate SeaORM entities from the database."
+    desc: "🔄 Regenerate SeaORM entities from the database."
     vars:
       DATABASE_URL: "postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST}}:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}"
     cmds:
