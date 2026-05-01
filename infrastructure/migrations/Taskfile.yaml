@@ -26,6 +26,11 @@ tasks:
     cmds:
       - cargo run -p migrations -- status
 
+  test:
+    desc: "Run migration integration tests against a local PostgreSQL instance."
+    cmds:
+      - cargo test -p migrations --test migration_flow -- --test-threads=1
+
   generate:
     desc: "Generate a new SeaORM migration file. Usage: task migrations:generate NAME=create_posts"
     requires:
