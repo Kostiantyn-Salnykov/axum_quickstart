@@ -23,6 +23,7 @@ tasks:
     desc: Run cargo check for the whole workspace.
     cmds:
       - cargo check --workspace
+      - cargo clippy --workspace --all-targets -- -D warnings
 
   test:
     desc: Run all workspace tests.
@@ -39,17 +40,11 @@ tasks:
     cmds:
       - cargo fmt --all --check
 
-  clippy:
-    desc: Run clippy for all workspace targets.
-    cmds:
-      - cargo clippy --workspace --all-targets -- -D warnings
-
   pre:
     desc: Run pre-commit checks.
     cmds:
       - task: fmt
-      - task: fmt-check
-      - task: clippy
+      - task: check
       - task: test
 
   pipeline:
@@ -64,3 +59,14 @@ tasks:
     cmds:
       - task: pre
       - task: run
+
+  entity:
+    desc: "Regenerate SeaORM entities from the database."
+    vars:
+      DATABASE_URL: "postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST}}:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}"
+    cmds:
+      - sea-orm-cli generate entity
+        -u "{{.DATABASE_URL}}"
+        -o infrastructure/src/adapters/persistence/seaorm/entities
+        --ignore-tables migrations
+        --database-schema "{{.POSTGRES_SCHEMA}}"

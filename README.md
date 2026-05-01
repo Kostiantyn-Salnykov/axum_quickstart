@@ -1,71 +1,93 @@
-Create .env file inside root of the project:
-```dotenv
-POSTGRES_DB=postgres
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_HOST=127.0.0.1
-POSTGRES_PORT=5432
+# axum_quickstart
 
-SERVER_PORT=9999
+## Setup
 
-PGADMIN_LISTEN_PORT=8080
+Rename example.env to .env and fill in the values.
 
-REDIS_PORT=8000
-REDIS_INSIGHT_PORT=8001
-REDIS_HOST=127.0.0.1
-
-LOG_LEVEL=trace,tower_http=info,sea_orm=info,axum=info,api_http=info
-```
-
-Set environment variables to current powershell session:
-```powershell
-Get-Content .env | ForEach-Object {
-if ($_ -match '^\s*([^#][^=]+)=(.*)$') {
-[System.Environment]::SetEnvironmentVariable($matches[1].Trim(), $matches[2].Trim())
-}
-}
-```
-
-Regenerate sea_orm entities:
-```powershell
-sea-orm-cli generate entity `
-  -u "postgres://${env:POSTGRES_USER}:${env:POSTGRES_PASSWORD}@${env:POSTGRES_HOST}:${env:POSTGRES_PORT}/${env:POSTGRES_DB}" `
--o infrastructure/src/adapters/persistence/seaorm/entities `
---ignore-tables migrations
-```
-
-Update database schema:
-```powershell
-sea-orm-cli migrate up -d infrastructure/migrations
-```
-
-Rollback database schema:
-```powershell
-sea-orm-cli migrate down -d infrastructure/migrations
-```
-
-```powershell
-sea-orm-cli migrate generate <NAME> -d infrastructure/migrations
-```
-
-Taskfile commands:
-```powershell
+### Main commands:
+🖥️Run the application in local mode:
+```shell
 task
-task run
-task check
-task test
-task fmt
-task fmt-check
-task clippy
-task pre
-task pipeline
-task local
-task mig:up
-task mig:down -- 1
-task mig:fresh
-task mig:reset
-task mig:status
-task mig:generate NAME=create_posts
-task mig:entity
-task mig -- up
 ```
+```shell
+task local
+```
+(ℹ️by default `task` runs a bunch of commands under the hood.)
+
+---
+
+▶️Run the bootstrap application:
+```shell
+task run
+```
+🔎Run cargo check and clippy for the whole workspace:
+```shell
+task check
+```
+
+🧪Run all workspace tests:
+```shell
+task test
+```
+
+🧹Format the whole workspace
+```shell
+task fmt
+```
+
+✅Check formatting without changing files
+```shell
+task fmt-check
+```
+
+🛡️Run pre-commit checks
+```shell
+task pre
+```
+
+🚀Format, lint, test, build and run in release mode
+```shell
+task pipeline
+```
+
+---
+### ORM commands
+🔄Regenerate sea_orm entities:
+```shell
+task entity
+```
+
+### Migrations commands:
+🔢Update {NN} database migration:
+```shell
+task mig:up -- {NN}
+```
+
+⬇️Rollback {NN} database migration:
+```shell
+task mig:down -- {NN}
+```
+
+↗️Update database migration:
+```shell
+task mig:up
+```
+
+⛔️Rollback database migration:
+```shell
+task mig:down
+```
+(⚠️deletes the data and schemas defined in the migration files.)
+
+⛔Clean database migration:
+```shell
+task mig:reset
+```
+(⚠️deletes the data and schemas defined in the migration files.)
+
+
+⛔Down to 0 and up to the latest:
+```shell
+task mig:fresh
+```
+(⚠️deletes the data)

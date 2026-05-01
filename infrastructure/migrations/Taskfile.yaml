@@ -32,14 +32,3 @@ tasks:
       vars: [NAME]
     cmds:
       - sea-orm-cli migrate generate {{.NAME}} -d infrastructure/migrations
-
-  entity:
-    desc: "Regenerate SeaORM entities from the database."
-    vars:
-      DATABASE_URL: "postgres://{{.POSTGRES_USER}}:{{.POSTGRES_PASSWORD}}@{{.POSTGRES_HOST}}:{{.POSTGRES_PORT}}/{{.POSTGRES_DB}}"
-    cmds:
-      - sea-orm-cli generate entity
-        -u "{{.DATABASE_URL}}"
-        -o infrastructure/src/adapters/persistence/seaorm/entities
-        --ignore-tables migrations
-        --database-schema "{{.POSTGRES_SCHEMA}}"
