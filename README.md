@@ -36,7 +36,7 @@ sea-orm-cli generate entity `
 
 Update database schema:
 ```powershell
-sea-orm-cli migrate up -d infrastructure/migration
+sea-orm-cli migrate up -d infrastructure/migrations
 ```
 
 Rollback database schema:
@@ -60,4 +60,12 @@ task clippy
 task pre
 task pipeline
 task local
+task mig:up
+task mig:down -- 1
+task mig:fresh
+task mig:reset
+task mig:status
+task mig:generate NAME=create_posts
+task mig:entity
+task mig -- up
 ```

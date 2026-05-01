@@ -3,6 +3,11 @@ version: "3"
 dotenv:
   - .env
 
+includes:
+  mig:
+    taskfile: ./infrastructure/migrations/Taskfile.yaml
+    dir: ./
+
 tasks:
   default:
     desc: Run the application in local mode.

@@ -4,7 +4,7 @@ use super::sea_orm_active_enums::UsersWishlistsRole;
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "users_wishlists")]
+#[sea_orm(schema_name = "public", table_name = "users_wishlists")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub user_id: Uuid,
