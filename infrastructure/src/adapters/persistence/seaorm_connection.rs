@@ -1,10 +1,8 @@
 use sea_orm::{ConnectOptions, Database, DatabaseConnection, DbErr};
 use std::time::Duration;
 
-use crate::settings::Settings;
-
-pub async fn connect_db(settings: &Settings) -> Result<DatabaseConnection, DbErr> {
-    let mut options = ConnectOptions::new(settings.database_url());
+pub async fn connect_db(database_url: &str) -> Result<DatabaseConnection, DbErr> {
+    let mut options = ConnectOptions::new(database_url);
 
     options
         .max_connections(100)

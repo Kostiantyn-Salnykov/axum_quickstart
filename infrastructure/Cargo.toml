@@ -18,9 +18,7 @@ publish.workspace = true
 domain = {path = "../domain"}
 application = {path = "../application"}
 sea-orm = { version = "2.0.0-rc", features = [ "sqlx-postgres", "runtime-tokio-rustls", "debug-print", "with-uuid", "with-json", "with-chrono", "with-bigdecimal", "macros" ] }
-dotenvy = "0.15.7"
 serde = { workspace = true, features = ["derive"] }
-envy = "0.4.2"
 async-trait.workspace = true
 argon2 = "0.6.0-rc.8"
 uuid = { workspace = true, features = ["v4"] }

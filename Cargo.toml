@@ -1,5 +1,5 @@
 [workspace]
-members = ["bootstrap", "api_http", "domain", "infrastructure", "application", "infrastructure/migrations"]
+members = ["app_config", "bootstrap", "api_http", "domain", "infrastructure", "application", "infrastructure/migrations"]
 resolver = "2"
 default-members = ["bootstrap"]
 
@@ -10,7 +10,7 @@ rust-version = "1.92.0"
 authors = [
     "Kostiantyn Salnykov <kostiantyn.salnykov@gmail.com>",
 ]
-description = "Axum based project with hexagonal architecture."
+description = "Axum based project with hexagonal|clean architecture."
 readme = "README.md"
 license = "MIT"
 repository = "https://github.com/Kostiantyn-Salnykov/axum_quickstart"

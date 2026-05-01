@@ -1,21 +1,20 @@
 use std::sync::Arc;
 
-use crate::container::ApplicationContainer;
 use crate::wiring::auth::build_auth_services;
 use crate::wiring::system::build_health_check_service;
 use crate::wiring::users::build_get_user_service;
+use api_http::state::{AppState, SystemState, UsersState};
+use app_config::Settings;
 use application::auth::token_blacklist_port::TokenBlacklistPort;
 use infrastructure::adapters;
 use infrastructure::adapters::cache::redis_client::RedisClient;
-use infrastructure::settings::Settings;
 use sea_orm::DatabaseConnection;
 
-pub fn build_application_container(
+pub fn build_application_state(
     settings: &Settings,
     db: DatabaseConnection,
-) -> ApplicationContainer {
-    let redis_client =
-        RedisClient::new(&settings.redis_url()).expect("Failed to create Redis client.");
+) -> Result<AppState, Box<dyn std::error::Error>> {
+    let redis_client = RedisClient::new(&settings.redis_url())?;
     let blacklist: Arc<dyn TokenBlacklistPort> = Arc::new(
         adapters::cache::redis_token_blacklist::RedisTokenBlacklistAdapter::new(
             redis_client.clone(),
@@ -50,13 +49,9 @@ pub fn build_application_container(
     );
     let get_user = build_get_user_service(users, token_manager.clone());
 
-    ApplicationContainer::new(
-        health_check,
-        auth.register,
-        auth.login,
-        auth.logout,
-        auth.refresh,
-        token_manager.clone(),
-        get_user,
-    )
+    Ok(AppState {
+        system: SystemState { health_check },
+        auth,
+        users: UsersState { get: get_user },
+    })
 }

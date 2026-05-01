@@ -1,5 +1,5 @@
 [package]
-name = "migrations"
+name = "app_config"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -14,11 +14,7 @@ keywords.workspace = true
 categories.workspace = true
 publish.workspace = true
 
-[lib]
-name = "migrations"
-path = "src/lib.rs"
-
 [dependencies]
-app_config = { path = "../../app_config" }
-sea-orm-migration = { version = "2.0.0-rc.37", features = ["runtime-tokio-rustls", "sqlx-postgres", "with-chrono", "with-uuid", "with-rust_decimal", "with-json", "dotenvy"] }
-tokio = { workspace = true, features = ["full"] }
+config = "0.15.22"
+dotenvy = "0.15.7"
+serde = { workspace = true, features = ["derive"] }

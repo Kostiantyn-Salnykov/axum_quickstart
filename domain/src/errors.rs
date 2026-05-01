@@ -27,12 +27,18 @@ mod tests {
 
     #[test]
     fn displays_all_error_messages() {
-        assert_eq!(DomainError::InvalidEmail.to_string(), "Invalid email format.");
+        assert_eq!(
+            DomainError::InvalidEmail.to_string(),
+            "Invalid email format."
+        );
         assert_eq!(
             DomainError::InvalidPassword("bad password".to_string()).to_string(),
             "bad password"
         );
-        assert_eq!(DomainError::InvalidPhone.to_string(), "Invalid phone format.");
+        assert_eq!(
+            DomainError::InvalidPhone.to_string(),
+            "Invalid phone format."
+        );
         assert_eq!(
             DomainError::InvalidStatusTransition("archived".to_string()).to_string(),
             "Operation isn't allowed for this status: archived."

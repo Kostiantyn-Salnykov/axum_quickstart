@@ -1,4 +1,4 @@
-use infrastructure::settings::Settings;
+use app_config::Settings;
 use migrations::Migrator;
 use migrations::sea_orm::Database;
 use sea_orm_migration::MigratorTrait;
