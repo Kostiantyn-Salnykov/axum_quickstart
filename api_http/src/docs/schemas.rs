@@ -66,3 +66,36 @@ pub struct AuthRegisterSuccessResponse {
     pub message: Option<String>,
     pub data: crate::auth::register::response::RegisterResponse,
 }
+
+#[derive(Serialize, ToSchema)]
+pub struct AuthLoginSuccessResponse {
+    #[schema(example = "success")]
+    pub status: JsendSuccessStatus,
+    #[schema(example = 200)]
+    pub code: u16,
+    #[schema(example = "User logged in successfully.")]
+    pub message: Option<String>,
+    pub data: crate::auth::login::response::LoginResponse,
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct AuthRefreshSuccessResponse {
+    #[schema(example = "success")]
+    pub status: JsendSuccessStatus,
+    #[schema(example = 200)]
+    pub code: u16,
+    #[schema(example = "Tokens refreshed successfully.")]
+    pub message: Option<String>,
+    pub data: crate::auth::refresh::response::RefreshResponse,
+}
+
+#[derive(Serialize, ToSchema)]
+pub struct AuthLogoutSuccessResponse {
+    #[schema(example = "success")]
+    pub status: JsendSuccessStatus,
+    #[schema(example = 200)]
+    pub code: u16,
+    #[schema(example = "User logged out successfully.")]
+    pub message: Option<String>,
+    pub data: crate::auth::logout::response::LogoutResponse,
+}

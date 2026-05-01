@@ -39,7 +39,7 @@ tasks:
     deps: ["fmt", "check", "test"]
 
   pipeline:
-    desc: "⏩ Clear terminal, format, test, build and run in release mode."
+    desc: "🚀 Clear terminal, format, test, build and run in release mode."
     cmds:
       - task: pre
       - cargo build --workspace
@@ -49,6 +49,7 @@ tasks:
     desc: "🖥️ Run the application in local mode."
     deps: ["pre"]
     cmds:
+      - echo "Starting local development server at http:/http://127.0.0.1:{{.SERVER_PORT}}/docs/ 🚀"
       - task: run
 
   entity:
