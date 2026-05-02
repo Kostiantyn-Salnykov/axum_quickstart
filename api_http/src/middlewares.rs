@@ -1,6 +1,6 @@
 use crate::errors::AppError;
 use crate::state::AppState;
-use application::auth::token_manager_port::TokenPayload;
+use application::auth::token_manager_port::{TokenAudience, TokenPayload};
 use axum::extract::Request;
 use axum::http;
 use axum::middleware::Next;
@@ -29,6 +29,9 @@ pub async fn require_auth(
 ) -> Result<Response, AppError> {
     let token = bearer_token(request.headers())?;
     let payload = state.auth.token_manager.verify(token).await?;
+    if payload.audience != TokenAudience::Access {
+        return Err(AppError::Unauthorized);
+    }
     request.extensions_mut().insert(VerifiedToken(payload));
     Ok(next.run(request).await)
 }

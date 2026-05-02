@@ -15,7 +15,7 @@
         ),
         (
             status = 401,
-            description = "Missing or invalid bearer token",
+            description = "Missing, invalid, or non-access bearer token",
             body = crate::docs::schemas::FailResponse,
             example = json!({
                 "status": "fail",
