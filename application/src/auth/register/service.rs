@@ -48,7 +48,20 @@ impl RegisterUseCase for RegisterService {
         let password =
             RawPassword::new(&password).map_err(|e| ServiceError::Validation(e.to_string()))?;
 
+        tracing::debug!(
+            component = "RegisterService",
+            method = "register",
+            email = %email.as_str(),
+            "Checking if user already exists."
+        );
         if self.users.find_by_email(email.as_str()).await?.is_some() {
+            tracing::warn!(
+                component = "RegisterService",
+                method = "register",
+                email = %email.as_str(),
+                "Registration rejected: user already exists."
+            );
+
             return Err(ServiceError::Conflict(
                 "User with this email already exists.".to_string(),
             ));

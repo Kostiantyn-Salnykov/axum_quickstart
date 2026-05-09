@@ -6,5 +6,5 @@ use uuid::Uuid;
 #[async_trait]
 pub trait GetUserUseCase: Send + Sync {
     async fn get_by_id(&self, id: Uuid) -> Result<UserResult, ServiceError>;
-    async fn get_me(&self, access_token: String) -> Result<UserResult, ServiceError>;
+    async fn get_me(&self, user_id: Uuid) -> Result<UserResult, ServiceError>;
 }

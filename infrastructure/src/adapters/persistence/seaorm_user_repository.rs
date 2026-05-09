@@ -5,7 +5,10 @@ use application::errors::ServiceError;
 use application::users::user_repository_port::UserRepositoryPort;
 use async_trait::async_trait;
 use domain::user::User;
-use sea_orm::{ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter, RuntimeErr,
+    SqlxError,
+};
 use uuid::Uuid;
 
 pub struct SeaOrmUserRepositoryAdapter {
@@ -48,8 +51,15 @@ impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
     async fn create(&self, user: &User) -> Result<User, ServiceError> {
         let active_model = to_create_model(user);
         let model = active_model.insert(&self.db).await.map_err(|e| {
-            tracing::error!(error = %e, "Failed to create the user.");
-            ServiceError::internal(e)
+            tracing::error!(
+                component = "SeaOrmUserRepositoryAdapter",
+                method = "create",
+                error = %e,
+                user_id = %user.id,
+                email = %user.email.as_str(),
+                "Failed to create the user."
+            );
+            map_user_write_error(e)
         })?;
 
         model.try_into()
@@ -63,5 +73,26 @@ impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
         })?;
 
         model.try_into()
+    }
+}
+
+fn map_user_write_error(error: DbErr) -> ServiceError {
+    if is_unique_violation(&error) {
+        return ServiceError::Conflict("User with this email already exists.".to_string());
+    }
+
+    ServiceError::internal(error)
+}
+
+fn is_unique_violation(error: &DbErr) -> bool {
+    match error {
+        DbErr::Exec(RuntimeErr::SqlxError(error)) | DbErr::Query(RuntimeErr::SqlxError(error)) => {
+            matches!(
+                std::ops::Deref::deref(error),
+                SqlxError::Database(database_error)
+                    if database_error.code().as_deref() == Some("23505")
+            )
+        }
+        _ => false,
     }
 }

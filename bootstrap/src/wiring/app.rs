@@ -47,7 +47,7 @@ pub fn build_application_state(
         token_manager.clone(),
         blacklist,
     );
-    let get_user = build_get_user_service(users, token_manager.clone());
+    let get_user = build_get_user_service(users);
 
     Ok(AppState {
         system: SystemState { health_check },

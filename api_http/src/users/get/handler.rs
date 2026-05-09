@@ -1,10 +1,10 @@
 use crate::errors::AppError;
-use crate::middlewares::bearer_token;
+use crate::middlewares::VerifiedToken;
 use crate::responses::JsendResponse;
 use crate::state::AppState;
 use crate::users::get::response::UserResponse;
-use axum::extract::{Path, State};
-use axum::http::{HeaderMap, StatusCode};
+use axum::extract::{Extension, Path, State};
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use uuid::Uuid;
 
@@ -23,10 +23,9 @@ pub async fn get_by_id(
 
 pub async fn get_me(
     State(state): State<AppState>,
-    headers: HeaderMap,
+    Extension(verified): Extension<VerifiedToken>,
 ) -> Result<impl IntoResponse, AppError> {
-    let token = bearer_token(&headers)?;
-    let result = state.users.get.get_me(token.to_string()).await?;
+    let result = state.users.get.get_me(verified.0.user_id).await?;
 
     Ok(JsendResponse::success(
         StatusCode::OK,

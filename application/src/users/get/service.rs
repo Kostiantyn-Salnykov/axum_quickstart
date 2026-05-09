@@ -1,6 +1,5 @@
 use std::sync::Arc;
 
-use crate::auth::token_manager_port::{TokenAudience, TokenManagerPort};
 use crate::errors::ServiceError;
 use crate::users::get::result::UserResult;
 use crate::users::get::use_case::GetUserUseCase;
@@ -11,18 +10,11 @@ use uuid::Uuid;
 #[derive(Clone)]
 pub struct GetUserService {
     users: Arc<dyn UserRepositoryPort>,
-    token_manager: Arc<dyn TokenManagerPort>,
 }
 
 impl GetUserService {
-    pub fn new(
-        users: Arc<dyn UserRepositoryPort>,
-        token_manager: Arc<dyn TokenManagerPort>,
-    ) -> Self {
-        Self {
-            users,
-            token_manager,
-        }
+    pub fn new(users: Arc<dyn UserRepositoryPort>) -> Self {
+        Self { users }
     }
 }
 
@@ -37,15 +29,10 @@ impl GetUserUseCase for GetUserService {
         Ok(UserResult::from(user))
     }
 
-    async fn get_me(&self, access_token: String) -> Result<UserResult, ServiceError> {
-        let payload = self.token_manager.verify(access_token.trim()).await?;
-        if payload.audience != TokenAudience::Access {
-            return Err(ServiceError::InvalidCredentials);
-        }
-
+    async fn get_me(&self, user_id: Uuid) -> Result<UserResult, ServiceError> {
         let user = self
             .users
-            .find_by_id(payload.user_id)
+            .find_by_id(user_id)
             .await?
             .ok_or(ServiceError::InvalidCredentials)?;
 
