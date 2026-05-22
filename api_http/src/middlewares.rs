@@ -1,6 +1,6 @@
 use crate::errors::AppError;
 use crate::state::AppState;
-use application::auth::token_manager_port::{TokenAudience, TokenPayload};
+use application::auth::token_manager_port::TokenPayload;
 use axum::extract::Request;
 use axum::http;
 use axum::middleware::Next;
@@ -31,14 +31,13 @@ pub async fn require_auth(
     tracing::debug!(
         component = "Middleware",
         method = "require_auth",
-        token = token,
         "Verifying bearer token."
     );
-    let payload = state.auth.token_manager.verify(token).await?;
-    if payload.audience != TokenAudience::Access {
-        tracing::warn!("Request rejected: invalid or missing access token.");
-        return Err(AppError::Unauthorized);
-    }
+    let payload = state
+        .auth
+        .verify_access_token
+        .verify_access_token(token.to_string())
+        .await?;
     request.extensions_mut().insert(VerifiedToken(payload));
     Ok(next.run(request).await)
 }

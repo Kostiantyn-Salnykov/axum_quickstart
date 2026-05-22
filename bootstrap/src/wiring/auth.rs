@@ -8,6 +8,7 @@ use application::auth::refresh::service::RefreshService;
 use application::auth::register::service::RegisterService;
 use application::auth::token_blacklist_port::TokenBlacklistPort;
 use application::auth::token_manager_port::TokenManagerPort;
+use application::auth::verify_access_token::service::VerifyAccessTokenService;
 use application::users::user_repository_port::UserRepositoryPort;
 
 pub fn build_auth_services(
@@ -25,6 +26,6 @@ pub fn build_auth_services(
         )),
         logout: Arc::new(LogoutService::new(blacklist)),
         refresh: Arc::new(RefreshService::new(users, token_manager.clone())),
-        token_manager,
+        verify_access_token: Arc::new(VerifyAccessTokenService::new(token_manager)),
     }
 }

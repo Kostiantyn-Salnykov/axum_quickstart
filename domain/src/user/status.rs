@@ -1,9 +1,8 @@
 use crate::errors::DomainError;
-use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum UserStatus {
     Unconfirmed,
     Confirmed,

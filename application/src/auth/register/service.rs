@@ -71,16 +71,17 @@ impl RegisterUseCase for RegisterService {
         let mut user = User::new_local(email, hash.into());
         user.set_phone(phone);
 
-        if let Some(first_name) = first_name.map(|v| v.trim().to_string())
-            && !first_name.is_empty()
-        {
-            user.first_name = first_name;
-        }
-
-        if let Some(last_name) = last_name.map(|v| v.trim().to_string())
-            && !last_name.is_empty()
-        {
-            user.last_name = last_name;
+        let first_name = first_name
+            .map(|v| v.trim().to_string())
+            .filter(|v| !v.is_empty());
+        let last_name = last_name
+            .map(|v| v.trim().to_string())
+            .filter(|v| !v.is_empty());
+        if first_name.is_some() || last_name.is_some() {
+            user.set_name(
+                first_name.unwrap_or_default(),
+                last_name.unwrap_or_default(),
+            );
         }
 
         user = self.users.create(&user).await?;

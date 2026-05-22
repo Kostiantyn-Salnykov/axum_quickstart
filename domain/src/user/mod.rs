@@ -16,16 +16,16 @@ use self::status::UserStatus;
 
 #[derive(Debug, Clone)]
 pub struct User {
-    pub id: Uuid,
-    pub first_name: String,
-    pub last_name: String,
-    pub email: Email,
-    pub phone: Option<Phone>,
-    pub password_hash: Option<PasswordHash>,
-    pub status: UserStatus,
-    pub provider: Option<AuthProvider>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    id: Uuid,
+    first_name: String,
+    last_name: String,
+    email: Email,
+    phone: Option<Phone>,
+    password_hash: Option<PasswordHash>,
+    status: UserStatus,
+    provider: Option<AuthProvider>,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
 }
 
 impl User {
@@ -57,6 +57,80 @@ impl User {
             created_at: Utc::now(),
             updated_at: Utc::now(),
         }
+    }
+
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "Persistence adapters need to restore a complete existing user without domain defaults."
+    )]
+    pub fn from_persisted(
+        id: Uuid,
+        first_name: String,
+        last_name: String,
+        email: Email,
+        phone: Option<Phone>,
+        password_hash: Option<PasswordHash>,
+        status: UserStatus,
+        provider: Option<AuthProvider>,
+        created_at: DateTime<Utc>,
+        updated_at: DateTime<Utc>,
+    ) -> Self {
+        Self {
+            id,
+            first_name,
+            last_name,
+            email,
+            phone,
+            password_hash,
+            status,
+            provider,
+            created_at,
+            updated_at,
+        }
+    }
+
+    pub fn id(&self) -> Uuid {
+        self.id
+    }
+
+    pub fn first_name(&self) -> &str {
+        &self.first_name
+    }
+
+    pub fn last_name(&self) -> &str {
+        &self.last_name
+    }
+
+    pub fn email(&self) -> &Email {
+        &self.email
+    }
+
+    pub fn phone(&self) -> Option<&Phone> {
+        self.phone.as_ref()
+    }
+
+    pub fn password_hash(&self) -> Option<&PasswordHash> {
+        self.password_hash.as_ref()
+    }
+
+    pub fn status(&self) -> &UserStatus {
+        &self.status
+    }
+
+    pub fn provider(&self) -> Option<&AuthProvider> {
+        self.provider.as_ref()
+    }
+
+    pub fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+
+    pub fn updated_at(&self) -> DateTime<Utc> {
+        self.updated_at
+    }
+
+    pub fn can_login(&self) -> bool {
+        self.status.can_login()
     }
 
     pub fn set_name(&mut self, first_name: String, last_name: String) {
@@ -92,14 +166,14 @@ mod tests {
 
         let user = User::new_local(email.clone(), password_hash);
 
-        assert_eq!(user.email, email);
-        assert_eq!(user.first_name, "");
-        assert_eq!(user.last_name, "");
-        assert!(user.phone.is_none());
-        assert!(user.provider.is_none());
-        assert!(user.password_hash.is_some());
-        assert_eq!(user.status, UserStatus::Unconfirmed);
-        assert!(user.updated_at >= user.created_at);
+        assert_eq!(user.email(), &email);
+        assert_eq!(user.first_name(), "");
+        assert_eq!(user.last_name(), "");
+        assert!(user.phone().is_none());
+        assert!(user.provider().is_none());
+        assert!(user.password_hash().is_some());
+        assert_eq!(user.status(), &UserStatus::Unconfirmed);
+        assert!(user.updated_at() >= user.created_at());
     }
 
     #[test]
@@ -108,10 +182,10 @@ mod tests {
 
         let user = User::new_external(email.clone(), AuthProvider::Google);
 
-        assert_eq!(user.email, email);
-        assert!(user.password_hash.is_none());
-        assert_eq!(user.provider, Some(AuthProvider::Google));
-        assert_eq!(user.status, UserStatus::Confirmed);
+        assert_eq!(user.email(), &email);
+        assert!(user.password_hash().is_none());
+        assert_eq!(user.provider(), Some(&AuthProvider::Google));
+        assert_eq!(user.status(), &UserStatus::Confirmed);
     }
 
     #[test]
@@ -120,22 +194,22 @@ mod tests {
         let password_hash = PasswordHash::from("hashed-password".to_string());
         let mut user = User::new_local(email, password_hash);
 
-        let initial_updated_at = user.updated_at;
+        let initial_updated_at = user.updated_at();
         user.set_name("John".to_string(), "Doe".to_string());
-        assert_eq!(user.first_name, "John");
-        assert_eq!(user.last_name, "Doe");
-        assert!(user.updated_at >= initial_updated_at);
+        assert_eq!(user.first_name(), "John");
+        assert_eq!(user.last_name(), "Doe");
+        assert!(user.updated_at() >= initial_updated_at);
 
-        let after_name_update = user.updated_at;
+        let after_name_update = user.updated_at();
         let phone = Phone::new("+12025550188").unwrap();
         user.set_phone(Some(phone.clone()));
-        assert_eq!(user.phone, Some(phone));
-        assert!(user.updated_at >= after_name_update);
+        assert_eq!(user.phone(), Some(&phone));
+        assert!(user.updated_at() >= after_name_update);
 
         user.confirm();
-        assert_eq!(user.status, UserStatus::Confirmed);
+        assert_eq!(user.status(), &UserStatus::Confirmed);
 
         user.require_password_reset();
-        assert_eq!(user.status, UserStatus::ForceChangePassword);
+        assert_eq!(user.status(), &UserStatus::ForceChangePassword);
     }
 }

@@ -55,8 +55,8 @@ impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
                 component = "SeaOrmUserRepositoryAdapter",
                 method = "create",
                 error = %e,
-                user_id = %user.id,
-                email = %user.email.as_str(),
+                user_id = %user.id(),
+                email = %user.email().as_str(),
                 "Failed to create the user."
             );
             map_user_write_error(e)

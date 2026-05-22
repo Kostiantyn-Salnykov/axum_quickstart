@@ -43,18 +43,17 @@ impl LoginUseCase for LoginService {
             .ok_or(ServiceError::InvalidCredentials)?;
 
         let hash = user
-            .password_hash
-            .as_ref()
+            .password_hash()
             .ok_or(ServiceError::InvalidCredentials)?;
 
         let is_valid = self.password_hasher.verify(password, hash.as_ref())?;
-        if !is_valid || !user.status.can_login() {
+        if !is_valid || !user.can_login() {
             return Err(ServiceError::InvalidCredentials);
         }
 
-        let pair = self.token_manager.issue_token_pair(user.id)?;
+        let pair = self.token_manager.issue_token_pair(user.id())?;
         Ok(LoginResult {
-            user_id: user.id,
+            user_id: user.id(),
             access_token: pair.access_token,
             refresh_token: pair.refresh_token,
             access_expires_at: pair.access_expires_at,

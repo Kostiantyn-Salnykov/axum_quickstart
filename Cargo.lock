@@ -1121,7 +1121,6 @@ dependencies = [
  "chrono",
  "email_address",
  "phonenumber",
- "serde",
  "thiserror",
  "uuid",
 ]

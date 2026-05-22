@@ -16,7 +16,6 @@ publish.workspace = true
 
 [dependencies]
 thiserror.workspace = true
-serde = { workspace = true, features = ["derive"] }
 chrono.workspace = true
 uuid = { workspace = true, features = ["v4", "v7", "v8"] }
 email_address = "0.2.9"

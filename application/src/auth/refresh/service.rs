@@ -39,13 +39,13 @@ impl RefreshUseCase for RefreshService {
             .await?
             .ok_or(ServiceError::InvalidCredentials)?;
 
-        if !user.status.can_login() {
+        if !user.can_login() {
             return Err(ServiceError::InvalidCredentials);
         }
 
-        let pair = self.token_manager.issue_token_pair(user.id)?;
+        let pair = self.token_manager.issue_token_pair(user.id())?;
         Ok(RefreshResult {
-            user_id: user.id,
+            user_id: user.id(),
             access_token: pair.access_token,
             refresh_token: pair.refresh_token,
             access_expires_at: pair.access_expires_at,

@@ -1,9 +1,8 @@
 use crate::errors::DomainError;
 use phonenumber::{Mode, parse};
-use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Phone(String);
 
 impl Phone {
