@@ -1,0 +1,27 @@
+version: "3"
+
+vars:
+  POSTGRES_SCRIPT: .\.scripts\PostgreSQL.ps1
+
+tasks:
+  default:
+    desc: "ℹ️ Show PostgreSQL Windows service status."
+    cmds:
+      - task: status
+
+  status:
+    desc: "ℹ️ Show PostgreSQL Windows service status."
+    cmds:
+      - powershell -NoProfile -ExecutionPolicy Bypass -File "{{.POSTGRES_SCRIPT}}" -Action status
+
+  start:
+    desc: "▶️ Start PostgreSQL Windows service."
+    cmds:
+      - powershell -NoProfile -ExecutionPolicy Bypass -File "{{.POSTGRES_SCRIPT}}" -Action start
+
+  stop:
+    desc: "⏹️ Stop PostgreSQL Windows service."
+    prompt:
+      - "⚠️ Are you sure?"
+    cmds:
+      - powershell -NoProfile -ExecutionPolicy Bypass -File "{{.POSTGRES_SCRIPT}}" -Action stop

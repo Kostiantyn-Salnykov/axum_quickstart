@@ -7,6 +7,11 @@ includes:
   mig:
     taskfile: ./infrastructure/migrations/Taskfile.yaml
     dir: ./
+  pg:
+    taskfile: ./.scripts/Taskfile.yaml
+    dir: ./
+    vars:
+      PROJECT_DIR: "{{.TASKFILE_DIR}}"
 
 tasks:
   default:
