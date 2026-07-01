@@ -41,10 +41,48 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_wishlists_created_by")
+                    .table(Wishlist::Table)
+                    .col(Wishlist::CreatedBy)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_wishlists_updated_by")
+                    .table(Wishlist::Table)
+                    .col(Wishlist::UpdatedBy)
+                    .to_owned(),
+            )
+            .await?;
+
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        manager
+            .drop_index(
+                Index::drop()
+                    .name("idx_wishlists_updated_by")
+                    .table(Wishlist::Table)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .drop_index(
+                Index::drop()
+                    .name("idx_wishlists_created_by")
+                    .table(Wishlist::Table)
+                    .to_owned(),
+            )
+            .await?;
+
         manager
             .drop_table(Table::drop().table(Wishlist::Table).to_owned())
             .await?;
