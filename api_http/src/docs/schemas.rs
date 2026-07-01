@@ -99,3 +99,14 @@ pub struct AuthLogoutSuccessResponse {
     pub message: Option<String>,
     pub data: crate::auth::logout::response::LogoutResponse,
 }
+
+#[derive(Serialize, ToSchema)]
+pub struct UsersSearchSuccessResponse {
+    #[schema(example = "success")]
+    pub status: JsendSuccessStatus,
+    #[schema(example = 200)]
+    pub code: u16,
+    #[schema(example = "Users fetched successfully.")]
+    pub message: Option<String>,
+    pub data: crate::users::search::response::UserSearchResponse,
+}

@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use axum::Router;
 use utoipa::OpenApi;
 use utoipa::openapi::security::{Http, HttpAuthScheme, SecurityScheme};
@@ -11,7 +12,9 @@ use crate::docs::health_check::check::__path_health_check_docs;
 use crate::docs::schemas::{
     AuthLoginSuccessResponse, AuthLogoutSuccessResponse, AuthRefreshSuccessResponse,
     AuthRegisterSuccessResponse, ErrorResponse, FailResponse, HealthCheckSuccessResponse,
+    UsersSearchSuccessResponse,
 };
+use crate::docs::users::search::{__path_users_search_docs, __path_users_search_stream_docs};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -21,6 +24,8 @@ use crate::docs::schemas::{
         auth_login_docs,
         auth_refresh_docs,
         auth_logout_docs,
+        users_search_docs,
+        users_search_stream_docs,
     ),
     components(
         schemas(
@@ -30,7 +35,8 @@ use crate::docs::schemas::{
             AuthRegisterSuccessResponse,
             AuthLoginSuccessResponse,
             AuthRefreshSuccessResponse,
-            AuthLogoutSuccessResponse
+            AuthLogoutSuccessResponse,
+            UsersSearchSuccessResponse
         )
     ),
     modifiers(&SecurityAddon),

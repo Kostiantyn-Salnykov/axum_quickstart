@@ -20,6 +20,15 @@ This repository is a Rust workspace for an Axum-based backend.
 - `task pre`
 - `task pipeline`
 
+## Required verification steps
+
+When changing code, prefer running these checks in this order when they are relevant:
+
+1. `task fmt`
+2. `task clippy`
+3. `task test`
+4. `task run`
+
 ## Database and schema work
 
 - Use the `task mig:*` commands for migration changes.

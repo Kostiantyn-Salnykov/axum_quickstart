@@ -3,8 +3,11 @@ use application::auth::logout::use_case::LogoutUseCase;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::use_case::RegisterUseCase;
 use application::auth::verify_access_token::use_case::VerifyAccessTokenUseCase;
+use application::search::use_case::SearchUseCase;
 use application::system::health_check::use_case::HealthCheckUseCase;
 use application::users::get::use_case::GetUserUseCase;
+use application::users::search::query::UserSearchField;
+use application::users::search::result::UserSearchResult;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -24,6 +27,7 @@ pub struct AuthState {
 #[derive(Clone)]
 pub struct UsersState {
     pub get: Arc<dyn GetUserUseCase>,
+    pub search: Arc<dyn SearchUseCase<UserSearchField, UserSearchResult>>,
 }
 
 #[derive(Clone)]
