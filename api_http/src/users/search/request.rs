@@ -63,6 +63,7 @@ pub enum UserFilterOperatorRequest {
     Le,
     Eq,
     Ne,
+    Contains,
     In,
     Nin,
 }
@@ -214,7 +215,9 @@ impl TryFrom<UserFilterNodeRequest> for app::UserFilterNode {
 
                 if !matches!(
                     operator,
-                    UserFilterOperatorRequest::In | UserFilterOperatorRequest::Nin
+                    UserFilterOperatorRequest::In
+                        | UserFilterOperatorRequest::Nin
+                        | UserFilterOperatorRequest::Contains
                 ) && values.len() != 1
                 {
                     return Err(format!("Filter `{:?}` requires exactly one value.", field));
@@ -248,6 +251,7 @@ impl From<UserFilterOperatorRequest> for app::UserFilterOperator {
             UserFilterOperatorRequest::Le => Self::Le,
             UserFilterOperatorRequest::Eq => Self::Eq,
             UserFilterOperatorRequest::Ne => Self::Ne,
+            UserFilterOperatorRequest::Contains => Self::Contains,
             UserFilterOperatorRequest::In => Self::In,
             UserFilterOperatorRequest::Nin => Self::Nin,
         }

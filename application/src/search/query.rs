@@ -41,6 +41,7 @@ pub enum SearchFilterOperator {
     Le,
     Eq,
     Ne,
+    Contains,
     In,
     Nin,
 }
@@ -124,6 +125,7 @@ impl Display for SearchFilterOperator {
             Self::Le => "le",
             Self::Eq => "eq",
             Self::Ne => "ne",
+            Self::Contains => "contains",
             Self::In => "in",
             Self::Nin => "nin",
         })

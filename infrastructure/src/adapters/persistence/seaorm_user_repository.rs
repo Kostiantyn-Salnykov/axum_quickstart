@@ -22,7 +22,7 @@ use domain::user::status::UserStatus;
 use sea_orm::sea_query::SimpleExpr;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, Order, QueryFilter,
-    RuntimeErr, SqlxError,
+    RuntimeErr,
 };
 use std::str::FromStr;
 use uuid::Uuid;
@@ -179,23 +179,31 @@ impl SearchRepositoryPort<UserSearchField, UserSearchResult> for SeaOrmUserRepos
 }
 
 fn map_user_write_error(error: DbErr) -> ServiceError {
-    if is_unique_violation(&error) {
-        return ServiceError::Conflict("User with this email already exists.".to_string());
+    if let Some(message) = unique_violation_message(&error) {
+        return ServiceError::Conflict(message);
     }
 
     ServiceError::internal(error)
 }
 
-fn is_unique_violation(error: &DbErr) -> bool {
+fn unique_violation_message(error: &DbErr) -> Option<String> {
     match error {
         DbErr::Exec(RuntimeErr::SqlxError(error)) | DbErr::Query(RuntimeErr::SqlxError(error)) => {
-            matches!(
-                std::ops::Deref::deref(error),
-                SqlxError::Database(database_error)
-                    if database_error.code().as_deref() == Some("23505")
-            )
+            let database_error = std::ops::Deref::deref(error).as_database_error()?;
+
+            if database_error.code().as_deref() != Some("23505") {
+                return None;
+            }
+
+            let message = match database_error.constraint() {
+                Some("uidx_users_email") => "User with this email already exists.",
+                Some("uidx_users_phone") => "User with this phone already exists.",
+                _ => "User already exists.",
+            };
+
+            Some(message.to_string())
         }
-        _ => false,
+        _ => None,
     }
 }
 
@@ -244,6 +252,7 @@ fn build_string_condition(
         SearchFilterOperator::Le => column.lte(value),
         SearchFilterOperator::Eq => column.eq(value),
         SearchFilterOperator::Ne => column.ne(value),
+        SearchFilterOperator::Contains => column.contains(value),
         SearchFilterOperator::In => column.is_in(values.to_vec()),
         SearchFilterOperator::Nin => column.is_not_in(values.to_vec()),
     })
@@ -267,6 +276,11 @@ fn build_uuid_condition(
         SearchFilterOperator::Le => column.lte(value),
         SearchFilterOperator::Eq => column.eq(value),
         SearchFilterOperator::Ne => column.ne(value),
+        SearchFilterOperator::Contains => {
+            return Err(ServiceError::Validation(
+                "Contains filter is only supported for text fields.".to_string(),
+            ));
+        }
         SearchFilterOperator::In => column.is_in(parsed),
         SearchFilterOperator::Nin => column.is_not_in(parsed),
     })
@@ -290,6 +304,11 @@ fn build_datetime_condition(
         SearchFilterOperator::Le => column.lte(value),
         SearchFilterOperator::Eq => column.eq(value),
         SearchFilterOperator::Ne => column.ne(value),
+        SearchFilterOperator::Contains => {
+            return Err(ServiceError::Validation(
+                "Contains filter is only supported for text fields.".to_string(),
+            ));
+        }
         SearchFilterOperator::In => column.is_in(parsed),
         SearchFilterOperator::Nin => column.is_not_in(parsed),
     })
@@ -309,7 +328,8 @@ fn build_status_condition(
         SearchFilterOperator::Gt
         | SearchFilterOperator::Ge
         | SearchFilterOperator::Lt
-        | SearchFilterOperator::Le => Err(ServiceError::Validation(
+        | SearchFilterOperator::Le
+        | SearchFilterOperator::Contains => Err(ServiceError::Validation(
             "Ordering operators are not supported for status.".to_string(),
         )),
         SearchFilterOperator::Eq => Ok(users::Column::Status.eq(value)),
@@ -333,7 +353,8 @@ fn build_provider_condition(
         SearchFilterOperator::Gt
         | SearchFilterOperator::Ge
         | SearchFilterOperator::Lt
-        | SearchFilterOperator::Le => Err(ServiceError::Validation(
+        | SearchFilterOperator::Le
+        | SearchFilterOperator::Contains => Err(ServiceError::Validation(
             "Ordering operators are not supported for provider.".to_string(),
         )),
         SearchFilterOperator::Eq => Ok(users::Column::Provider.eq(value)),
