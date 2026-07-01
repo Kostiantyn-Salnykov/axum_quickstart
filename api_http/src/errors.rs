@@ -34,6 +34,10 @@ impl AppError {
             other => Self::BadRequest(other.body_text()),
         }
     }
+
+    pub fn from_content_body_rejection(rejection: crate::content::ContentBodyRejection) -> Self {
+        rejection.into_app_error()
+    }
 }
 
 impl From<ServiceError> for AppError {

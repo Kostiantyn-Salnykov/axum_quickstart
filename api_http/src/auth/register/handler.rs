@@ -1,19 +1,18 @@
 use crate::auth::register::request::RegisterRequest;
 use crate::auth::register::response::RegisterResponse;
+use crate::content::ContentBody;
 use crate::errors::AppError;
 use crate::responses::JsendResponse;
 use crate::state::AppState;
-use axum::Json;
 use axum::extract::State;
-use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
 pub async fn register(
     State(state): State<AppState>,
-    payload: Result<Json<RegisterRequest>, JsonRejection>,
+    payload: Result<ContentBody<RegisterRequest>, crate::content::ContentBodyRejection>,
 ) -> Result<impl IntoResponse, AppError> {
-    let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
+    let ContentBody(payload) = payload.map_err(AppError::from_content_body_rejection)?;
     let result = state
         .auth
         .register

@@ -22,7 +22,7 @@ pub struct UserSearchingRequest {
 #[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct UserProjectionRequest {
     pub mode: UserProjectionMode,
-    pub fields: Vec<UserSearchFieldRequest>,
+    pub fields: Vec<UserFilterFieldRequest>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, ToSchema)]
@@ -41,7 +41,7 @@ pub enum UserFilterNodeRequest {
         items: Vec<UserFilterNodeRequest>,
     },
     Condition {
-        field: UserSearchFieldRequest,
+        field: UserFilterFieldRequest,
         operator: UserFilterOperatorRequest,
         values: Vec<String>,
     },
@@ -69,7 +69,7 @@ pub enum UserFilterOperatorRequest {
 
 #[derive(Debug, Clone, Deserialize, ToSchema)]
 pub struct UserSortRuleRequest {
-    pub field: UserSearchFieldRequest,
+    pub field: UserFilterFieldRequest,
     pub direction: UserSortDirectionRequest,
 }
 
@@ -91,6 +91,14 @@ pub enum UserPaginationRequest {
 #[derive(Debug, Clone, Copy, Deserialize, ToSchema, PartialEq, Eq, Hash)]
 #[serde(rename_all = "snake_case")]
 pub enum UserSearchFieldRequest {
+    FirstName,
+    LastName,
+    Email,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, ToSchema, PartialEq, Eq, Hash)]
+#[serde(rename_all = "snake_case")]
+pub enum UserFilterFieldRequest {
     Id,
     FirstName,
     LastName,
@@ -135,16 +143,6 @@ impl UserSearchRequest {
                 .map(Into::into)
                 .collect(),
         });
-        if let Some(searching) = &searching
-            && searching
-                .fields
-                .iter()
-                .any(|field| *field != app::UserSearchField::Email)
-        {
-            return Err(AppError::Validation(
-                "User searching is supported only by email.".to_string(),
-            ));
-        }
         let filtration = self
             .filtration
             .map(TryInto::try_into)
@@ -291,19 +289,33 @@ impl TryFrom<UserPaginationRequest> for app::UserPagination {
 impl From<UserSearchFieldRequest> for app::UserSearchField {
     fn from(value: UserSearchFieldRequest) -> Self {
         match value {
-            UserSearchFieldRequest::Id => Self::Id,
             UserSearchFieldRequest::FirstName => Self::FirstName,
             UserSearchFieldRequest::LastName => Self::LastName,
             UserSearchFieldRequest::Email => Self::Email,
-            UserSearchFieldRequest::Phone => Self::Phone,
-            UserSearchFieldRequest::Status => Self::Status,
-            UserSearchFieldRequest::Provider => Self::Provider,
-            UserSearchFieldRequest::CreatedAt => Self::CreatedAt,
-            UserSearchFieldRequest::UpdatedAt => Self::UpdatedAt,
         }
     }
 }
 
 fn default_search_fields() -> Vec<UserSearchFieldRequest> {
-    vec![UserSearchFieldRequest::Email]
+    vec![
+        UserSearchFieldRequest::FirstName,
+        UserSearchFieldRequest::LastName,
+        UserSearchFieldRequest::Email,
+    ]
+}
+
+impl From<UserFilterFieldRequest> for app::UserSearchField {
+    fn from(value: UserFilterFieldRequest) -> Self {
+        match value {
+            UserFilterFieldRequest::Id => Self::Id,
+            UserFilterFieldRequest::FirstName => Self::FirstName,
+            UserFilterFieldRequest::LastName => Self::LastName,
+            UserFilterFieldRequest::Email => Self::Email,
+            UserFilterFieldRequest::Phone => Self::Phone,
+            UserFilterFieldRequest::Status => Self::Status,
+            UserFilterFieldRequest::Provider => Self::Provider,
+            UserFilterFieldRequest::CreatedAt => Self::CreatedAt,
+            UserFilterFieldRequest::UpdatedAt => Self::UpdatedAt,
+        }
+    }
 }

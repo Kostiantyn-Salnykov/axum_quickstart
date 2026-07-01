@@ -50,6 +50,6 @@ impl Display for UserSearchField {
 
 impl SearchableField for UserSearchField {
     fn search_fields() -> &'static [Self] {
-        &[Self::Email]
+        &[Self::FirstName, Self::LastName, Self::Email]
     }
 }

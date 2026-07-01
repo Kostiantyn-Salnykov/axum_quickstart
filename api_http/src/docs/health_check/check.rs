@@ -7,12 +7,18 @@
         (
             status = 200,
             description = "Health check completed successfully",
-            body = crate::docs::schemas::HealthCheckSuccessResponse
+            content(
+                (crate::docs::schemas::HealthCheckSuccessResponse = "application/json"),
+                (crate::docs::schemas::HealthCheckSuccessResponse = "application/msgpack")
+            )
         ),
         (
             status = 500,
             description = "Internal server error",
-            body = crate::docs::schemas::ErrorResponse
+            content(
+                (crate::docs::schemas::ErrorResponse = "application/json"),
+                (crate::docs::schemas::ErrorResponse = "application/msgpack")
+            )
         )
     )
 )]

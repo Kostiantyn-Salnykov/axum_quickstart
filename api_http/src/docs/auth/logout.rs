@@ -11,22 +11,30 @@
         (
             status = 200,
             description = "User logged out successfully.",
-            body = crate::docs::schemas::AuthLogoutSuccessResponse
+            content(
+                (crate::docs::schemas::AuthLogoutSuccessResponse = "application/json"),
+                (crate::docs::schemas::AuthLogoutSuccessResponse = "application/msgpack")
+            )
         ),
         (
             status = 401,
             description = "Missing, invalid, or non-access bearer token",
-            body = crate::docs::schemas::FailResponse,
-            example = json!({
-                "status": "fail",
-                "code": 401,
-                "message": "Unauthorized"
-            })
+            content(
+                (crate::docs::schemas::FailResponse = "application/json", example = json!({
+                    "status": "fail",
+                    "code": 401,
+                    "message": "Unauthorized"
+                })),
+                (crate::docs::schemas::FailResponse = "application/msgpack")
+            )
         ),
         (
             status = 500,
             description = "Internal server error",
-            body = crate::docs::schemas::ErrorResponse
+            content(
+                (crate::docs::schemas::ErrorResponse = "application/json"),
+                (crate::docs::schemas::ErrorResponse = "application/msgpack")
+            )
         )
     )
 )]

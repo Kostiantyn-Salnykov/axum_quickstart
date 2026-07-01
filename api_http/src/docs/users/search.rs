@@ -6,66 +6,79 @@ use crate::users::search::request::UserSearchRequest;
     path = "/v1/users/search/",
     tag = "users",
     request_body(
-        content = UserSearchRequest,
         description = "Search users with full-text search, filters, projection, sorting and pagination.",
-        content_type = "application/json",
-        examples(
-            ("1" = (
-                summary = "Search by name and email",
-                value = json!({
-                    "searching": {
-                        "value": "kostiantyn",
-                        "fields": ["first_name", "last_name", "email"]
-                    },
-                    "projection": {
-                        "mode": "show",
-                        "fields": ["id", "email", "first_name", "last_name", "status"]
-                    },
-                    "filtration": {
-                        "kind": "group",
-                        "combinator": "and",
-                        "items": [
-                            {
-                                "kind": "condition",
-                                "field": "status",
-                                "operator": "eq",
-                                "values": ["confirmed"]
-                            }
-                        ]
-                    },
-                    "sorting": [
-                        { "field": "created_at", "direction": "desc" },
-                        { "field": "id", "direction": "desc" }
-                    ],
-                    "pagination": {
-                        "kind": "page_size",
-                        "page": 1,
-                        "size": 25
-                    }
-                })
-            ))
+        content(
+            (UserSearchRequest = "application/json", examples(
+                ("1" = (
+                    summary = "Search by name and email",
+                    value = json!({
+                        "searching": {
+                            "value": "kostiantyn",
+                            "fields": ["first_name", "last_name", "email"]
+                        },
+                        "projection": {
+                            "mode": "show",
+                            "fields": ["id", "email", "first_name", "last_name", "status"]
+                        },
+                        "filtration": {
+                            "kind": "group",
+                            "combinator": "and",
+                            "items": [
+                                {
+                                    "kind": "condition",
+                                    "field": "status",
+                                    "operator": "eq",
+                                    "values": ["confirmed"]
+                                }
+                            ]
+                        },
+                        "sorting": [
+                            { "field": "created_at", "direction": "desc" },
+                            { "field": "id", "direction": "desc" }
+                        ],
+                        "pagination": {
+                            "kind": "page_size",
+                            "page": 1,
+                            "size": 25
+                        }
+                    })
+                ))
+            )),
+            (UserSearchRequest = "application/msgpack")
         )
     ),
     responses(
         (
             status = 200,
             description = "Users fetched successfully.",
-            body = crate::docs::schemas::UsersSearchSuccessResponse
+            content(
+                (crate::docs::schemas::UsersSearchSuccessResponse = "application/json"),
+                (crate::docs::schemas::UsersSearchSuccessResponse = "application/msgpack")
+            )
         ),
         (
             status = 400,
             description = "Bad request",
-            body = crate::docs::schemas::FailResponse
+            content(
+                (crate::docs::schemas::FailResponse = "application/json"),
+                (crate::docs::schemas::FailResponse = "application/msgpack")
+            )
         ),
         (
             status = 422,
             description = "Validation failed",
-            body = crate::docs::schemas::FailResponse
+            content(
+                (crate::docs::schemas::FailResponse = "application/json"),
+                (crate::docs::schemas::FailResponse = "application/msgpack")
+            )
         ),
         (
             status = 500,
             description = "Internal server error",
-            body = crate::docs::schemas::ErrorResponse
+            content(
+                (crate::docs::schemas::ErrorResponse = "application/json"),
+                (crate::docs::schemas::ErrorResponse = "application/msgpack")
+            )
         )
     )
 )]

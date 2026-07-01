@@ -1,19 +1,18 @@
 use crate::auth::login::request::LoginRequest;
 use crate::auth::login::response::LoginResponse;
+use crate::content::ContentBody;
 use crate::errors::AppError;
 use crate::responses::JsendResponse;
 use crate::state::AppState;
-use axum::Json;
 use axum::extract::State;
-use axum::extract::rejection::JsonRejection;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 
 pub async fn login(
     State(state): State<AppState>,
-    payload: Result<Json<LoginRequest>, JsonRejection>,
+    payload: Result<ContentBody<LoginRequest>, crate::content::ContentBodyRejection>,
 ) -> Result<impl IntoResponse, AppError> {
-    let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
+    let ContentBody(payload) = payload.map_err(AppError::from_content_body_rejection)?;
     let result = state
         .auth
         .login

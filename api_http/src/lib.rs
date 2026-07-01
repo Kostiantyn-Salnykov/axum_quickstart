@@ -7,6 +7,7 @@ use tower_http::trace::TraceLayer;
 use tracing::Span;
 
 pub mod auth;
+mod content;
 mod docs;
 mod enums;
 mod errors;
@@ -36,6 +37,9 @@ pub fn create_router(state: AppState) -> Router {
     Router::new()
         .merge(docs::router())
         .nest(API_VERSION, api_v1)
+        .route_layer(axum::middleware::from_fn(
+            content::negotiate_response_format,
+        ))
         .layer(
             ServiceBuilder::new()
                 .layer(SetRequestIdLayer::new(

@@ -6,44 +6,56 @@ use crate::auth::login::request::LoginRequest;
     path = "/v1/auth/login/",
     tag = "auth",
     request_body(
-        content = LoginRequest,
         description = "User login payload",
-        content_type = "application/json",
-        examples(
-            ("1" = (
-                summary = "Login user",
-                value = json!({
-                    "email": "kostiantyn.salnykov@gmail.com",
-                    "password": "Fake123password!",
-                })
+        content(
+            (LoginRequest = "application/json", examples(
+                ("1" = (
+                    summary = "Login user",
+                    value = json!({
+                        "email": "kostiantyn.salnykov@gmail.com",
+                        "password": "Fake123password!",
+                    })
+                )),
             )),
+            (LoginRequest = "application/msgpack")
         )
     ),
     responses(
         (
             status = 200,
             description = "User logged in successfully.",
-            body = crate::docs::schemas::AuthLoginSuccessResponse
+            content(
+                (crate::docs::schemas::AuthLoginSuccessResponse = "application/json"),
+                (crate::docs::schemas::AuthLoginSuccessResponse = "application/msgpack")
+            )
         ),
         (
             status = 400,
             description = "Bad request",
-            body = crate::docs::schemas::FailResponse
+            content(
+                (crate::docs::schemas::FailResponse = "application/json"),
+                (crate::docs::schemas::FailResponse = "application/msgpack")
+            )
         ),
         (
             status = 401,
             description = "Invalid credentials",
-            body = crate::docs::schemas::FailResponse,
-            example = json!({
-                "status": "fail",
-                "code": 401,
-                "message": "Unauthorized"
-            })
+            content(
+                (crate::docs::schemas::FailResponse = "application/json", example = json!({
+                    "status": "fail",
+                    "code": 401,
+                    "message": "Unauthorized"
+                })),
+                (crate::docs::schemas::FailResponse = "application/msgpack")
+            )
         ),
         (
             status = 500,
             description = "Internal server error",
-            body = crate::docs::schemas::ErrorResponse
+            content(
+                (crate::docs::schemas::ErrorResponse = "application/json"),
+                (crate::docs::schemas::ErrorResponse = "application/msgpack")
+            )
         )
     )
 )]

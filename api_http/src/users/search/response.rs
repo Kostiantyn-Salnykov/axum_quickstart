@@ -98,7 +98,7 @@ impl From<UserSearchPaginationResult> for UserSearchPaginationResponse {
     fn from(value: UserSearchPaginationResult) -> Self {
         Self {
             has_more: value.has_more,
-            next_cursor: value.next_cursor,
+            next_cursor: value.next_cursor.filter(|_| value.has_more),
             skip: value.skip,
             limit: value.limit,
             page: value.page,

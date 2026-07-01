@@ -1,10 +1,11 @@
+use crate::content::ContentBody;
 use crate::errors::AppError;
 use crate::responses::JsendResponse;
 use crate::state::AppState;
 use crate::users::search::request::UserSearchRequest;
 use crate::users::search::response::{UserSearchResponse, stream_line};
 use axum::body::Body;
-use axum::extract::{Json, State, rejection::JsonRejection};
+use axum::extract::State;
 use axum::http::{HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use bytes::Bytes;
@@ -13,9 +14,9 @@ use tokio_stream::iter;
 
 pub async fn search(
     State(state): State<AppState>,
-    payload: Result<Json<UserSearchRequest>, JsonRejection>,
+    payload: Result<ContentBody<UserSearchRequest>, crate::content::ContentBodyRejection>,
 ) -> Result<impl IntoResponse, AppError> {
-    let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
+    let ContentBody(payload) = payload.map_err(AppError::from_content_body_rejection)?;
     let (query, projection) = payload.into_query()?;
     let result = state.users.search.search(query).await?;
 
@@ -28,9 +29,9 @@ pub async fn search(
 
 pub async fn search_stream(
     State(state): State<AppState>,
-    payload: Result<Json<UserSearchRequest>, JsonRejection>,
+    payload: Result<ContentBody<UserSearchRequest>, crate::content::ContentBodyRejection>,
 ) -> Result<Response, AppError> {
-    let Json(payload) = payload.map_err(AppError::from_json_rejection)?;
+    let ContentBody(payload) = payload.map_err(AppError::from_content_body_rejection)?;
     let (query, projection) = payload.into_query()?;
     let result = state.users.search.search(query).await?;
 

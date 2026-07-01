@@ -1,6 +1,5 @@
 use crate::enums::JsendStatus;
 use crate::errors::AppError;
-use axum::Json;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
@@ -30,7 +29,7 @@ impl<T: Serialize> IntoResponse for JsendResponse<T> {
     fn into_response(self) -> Response {
         let http_status =
             StatusCode::from_u16(self.code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        (http_status, Json(self)).into_response()
+        crate::content::serialize_response(http_status, self)
     }
 }
 
@@ -67,6 +66,6 @@ impl IntoResponse for AppError {
             data: None,
         };
 
-        (http_status, Json(body)).into_response()
+        crate::content::serialize_response(http_status, body)
     }
 }

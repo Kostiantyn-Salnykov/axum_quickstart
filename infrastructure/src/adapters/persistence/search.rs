@@ -87,12 +87,16 @@ where
         rows.pop();
     }
 
-    let next_cursor = rows.last().map(|row| {
-        encode_cursor_token(
-            &effective_sorting,
-            S::cursor_values(row, &effective_sorting),
-        )
-    });
+    let next_cursor = if has_more {
+        rows.last().map(|row| {
+            encode_cursor_token(
+                &effective_sorting,
+                S::cursor_values(row, &effective_sorting),
+            )
+        })
+    } else {
+        None
+    };
     let skip = match query.pagination {
         SearchPagination::SkipLimit { skip, .. } => Some(skip),
         _ => None,
