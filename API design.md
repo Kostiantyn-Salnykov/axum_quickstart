@@ -1,14 +1,15 @@
 Simple CRUD operations:
 
-| Method | Endpoint          | Description                                                    | Status OK | Status FAIL |
-|--------|-------------------|----------------------------------------------------------------|-----------|-------------|
-| POST   | /{entity}/        | Create one                                                     | 201       | 400, 422    |
-| GET    | /{entity}/{id}/   | Retrieve one                                                   | 200       | 404         |
-| POST   | /{entity}/search/ | List з searching/filters/pagination/sorting/projection in body | 200       | 422         |
-| PUT    | /{entity}/{id}/   | Replace one                                                    | 200       | 400, 422    |
-| PATCH  | /{entity}/{id}/   | Partial update one                                             | 200       | 404         |
-| DELETE | /{entity}/{id}/   | Delete one                                                     | 204       | 404         |
-| HEAD   | /{entity}/{id}/   | Check existance without retrieving                             | 200       | 404         |
+| Method | Endpoint                | Description                                                                    | Status OK | Status FAIL |
+|--------|-------------------------|--------------------------------------------------------------------------------|-----------|-------------|
+| POST   | /{entity}/              | Create one                                                                     | 201       | 400, 422    |
+| GET    | /{entity}/{id}/         | Retrieve one                                                                   | 200       | 404         |
+| POST   | /{entity}/search/       | List with `searching`/`filtration`/`pagination`/`sorting`/`projection` in body | 200       | 422         |
+| POST   | /{entity}/search/stream | ND-JSON list returned as a stream                                              | 200       | 422         |
+| PUT    | /{entity}/{id}/         | Replace one                                                                    | 200       | 400, 422    |
+| PATCH  | /{entity}/{id}/         | Partial update one                                                             | 200       | 404         |
+| DELETE | /{entity}/{id}/         | Delete one                                                                     | 204       | 404         |
+| HEAD   | /{entity}/{id}/         | Check existance without retrieving                                             | 200       | 404         |
 
 ---
 

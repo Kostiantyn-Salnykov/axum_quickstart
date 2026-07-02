@@ -6,6 +6,7 @@ Rename example.env to .env and fill in the values.
 
 ## Documentation
 
+- [Workspace and module structure](docs/workspace-structure.md)
 - [Authorization / Casbin module guide](docs/authorization.md)
 
 ### Main commands:
