@@ -67,29 +67,32 @@ impl UserSearchItemResponse {
 
         Self {
             id: include(application::users::search::query::UserSearchField::Id)
-                .then(|| value.id.to_string()),
+                .then_some(value.id)
+                .flatten(),
             first_name: include(application::users::search::query::UserSearchField::FirstName)
-                .then_some(value.first_name),
+                .then_some(value.first_name)
+                .flatten(),
             last_name: include(application::users::search::query::UserSearchField::LastName)
-                .then_some(value.last_name),
+                .then_some(value.last_name)
+                .flatten(),
             email: include(application::users::search::query::UserSearchField::Email)
-                .then_some(value.email),
-            phone: if include(application::users::search::query::UserSearchField::Phone) {
-                value.phone
-            } else {
-                None
-            },
+                .then_some(value.email)
+                .flatten(),
+            phone: include(application::users::search::query::UserSearchField::Phone)
+                .then_some(value.phone)
+                .flatten(),
             status: include(application::users::search::query::UserSearchField::Status)
-                .then_some(value.status),
-            provider: if include(application::users::search::query::UserSearchField::Provider) {
-                value.provider
-            } else {
-                None
-            },
+                .then_some(value.status)
+                .flatten(),
+            provider: include(application::users::search::query::UserSearchField::Provider)
+                .then_some(value.provider)
+                .flatten(),
             created_at: include(application::users::search::query::UserSearchField::CreatedAt)
-                .then(|| value.created_at.to_rfc3339()),
+                .then_some(value.created_at)
+                .flatten(),
             updated_at: include(application::users::search::query::UserSearchField::UpdatedAt)
-                .then(|| value.updated_at.to_rfc3339()),
+                .then_some(value.updated_at)
+                .flatten(),
         }
     }
 }

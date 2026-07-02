@@ -56,17 +56,9 @@ impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
 
     async fn search(&self, query: UserSearchQuery) -> Result<UserSearchPageResult, ServiceError> {
         let page = search_with_spec::<UserSearchSpec>(&self.db, query).await?;
-        let items = page
-            .items
-            .into_iter()
-            .map(TryInto::try_into)
-            .collect::<Result<Vec<User>, _>>()?
-            .into_iter()
-            .map(UserSearchResult::from)
-            .collect();
 
         Ok(UserSearchPageResult {
-            items,
+            items: page.items,
             pagination: page.pagination,
         })
     }

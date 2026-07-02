@@ -1,35 +1,26 @@
 pub type UserSearchPageResult = crate::search::result::SearchPageResult<UserSearchResult>;
 pub type UserSearchPaginationResult = crate::search::result::SearchPaginationResult;
 
-use chrono::{DateTime, Utc};
-use domain::user::User;
-use uuid::Uuid;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserSearchResult {
-    pub id: Uuid,
-    pub first_name: String,
-    pub last_name: String,
-    pub email: String,
+    #[serde(default)]
+    pub id: Option<String>,
+    #[serde(default)]
+    pub first_name: Option<String>,
+    #[serde(default)]
+    pub last_name: Option<String>,
+    #[serde(default)]
+    pub email: Option<String>,
+    #[serde(default)]
     pub phone: Option<String>,
-    pub status: String,
+    #[serde(default)]
+    pub status: Option<String>,
+    #[serde(default)]
     pub provider: Option<String>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
-}
-
-impl From<User> for UserSearchResult {
-    fn from(user: User) -> Self {
-        Self {
-            id: user.id(),
-            first_name: user.first_name().to_string(),
-            last_name: user.last_name().to_string(),
-            email: user.email().to_string(),
-            phone: user.phone().map(|phone| phone.to_string()),
-            status: user.status().to_string(),
-            provider: user.provider().map(|provider| provider.to_string()),
-            created_at: user.created_at(),
-            updated_at: user.updated_at(),
-        }
-    }
+    #[serde(default)]
+    pub created_at: Option<String>,
+    #[serde(default)]
+    pub updated_at: Option<String>,
 }

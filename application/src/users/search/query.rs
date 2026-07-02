@@ -1,6 +1,7 @@
 use crate::search::query::{
-    SearchFilterCombinator, SearchFilterNode, SearchFilterOperator, SearchPagination, SearchQuery,
-    SearchSearching, SearchSortDirection, SearchSortRule, SearchableField,
+    SearchFilterCombinator, SearchFilterNode, SearchFilterOperator, SearchPagination,
+    SearchProjection, SearchProjectionMode, SearchQuery, SearchSearching, SearchSortDirection,
+    SearchSortRule, SearchableField,
 };
 use std::fmt::{Display, Formatter};
 
@@ -9,6 +10,8 @@ pub type UserFilterNode = SearchFilterNode<UserSearchField>;
 pub type UserFilterOperator = SearchFilterOperator;
 pub type UserPagination = SearchPagination;
 pub type UserSearchQuery = SearchQuery<UserSearchField>;
+pub type UserSearchProjection = SearchProjection<UserSearchField>;
+pub type UserSearchProjectionMode = SearchProjectionMode;
 pub type UserSearching = SearchSearching<UserSearchField>;
 pub type UserSortDirection = SearchSortDirection;
 pub type UserSortRule = SearchSortRule<UserSearchField>;

@@ -156,6 +156,13 @@ impl UserSearchRequest {
             .map(TryInto::try_into)
             .collect::<Result<Vec<_>, _>>()
             .map_err(AppError::Validation)?;
+        let projection_query =
+            self.projection
+                .as_ref()
+                .map(|projection| app::UserSearchProjection {
+                    mode: projection.mode.into(),
+                    fields: projection.fields.iter().copied().map(Into::into).collect(),
+                });
         let pagination = self
             .pagination
             .map(TryInto::try_into)
@@ -172,6 +179,7 @@ impl UserSearchRequest {
                 searching,
                 filtration,
                 sorting,
+                projection: projection_query,
                 pagination,
             },
             projection,
@@ -184,6 +192,15 @@ impl From<UserProjectionRequest> for UserProjection {
         Self {
             mode: value.mode,
             fields: value.fields.into_iter().map(Into::into).collect(),
+        }
+    }
+}
+
+impl From<UserProjectionMode> for app::UserSearchProjectionMode {
+    fn from(value: UserProjectionMode) -> Self {
+        match value {
+            UserProjectionMode::Show => Self::Show,
+            UserProjectionMode::Hide => Self::Hide,
         }
     }
 }

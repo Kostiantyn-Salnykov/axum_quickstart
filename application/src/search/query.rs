@@ -5,12 +5,19 @@ pub struct SearchQuery<F> {
     pub searching: Option<SearchSearching<F>>,
     pub filtration: Option<SearchFilterNode<F>>,
     pub sorting: Vec<SearchSortRule<F>>,
+    pub projection: Option<SearchProjection<F>>,
     pub pagination: SearchPagination,
 }
 
 #[derive(Debug, Clone)]
 pub struct SearchSearching<F> {
     pub value: String,
+    pub fields: Vec<F>,
+}
+
+#[derive(Debug, Clone)]
+pub struct SearchProjection<F> {
+    pub mode: SearchProjectionMode,
     pub fields: Vec<F>,
 }
 
@@ -31,6 +38,12 @@ pub enum SearchFilterNode<F> {
 pub enum SearchFilterCombinator {
     And,
     Or,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum SearchProjectionMode {
+    Show,
+    Hide,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -84,12 +97,14 @@ impl<F> SearchQuery<F> {
         searching: Option<SearchSearching<F>>,
         filtration: Option<SearchFilterNode<F>>,
         sorting: Vec<SearchSortRule<F>>,
+        projection: Option<SearchProjection<F>>,
         pagination: SearchPagination,
     ) -> Self {
         Self {
             searching,
             filtration,
             sorting,
+            projection,
             pagination,
         }
     }
@@ -98,6 +113,12 @@ impl<F> SearchQuery<F> {
 impl<F> SearchSearching<F> {
     pub fn new(value: String, fields: Vec<F>) -> Self {
         Self { value, fields }
+    }
+}
+
+impl<F> SearchProjection<F> {
+    pub fn new(mode: SearchProjectionMode, fields: Vec<F>) -> Self {
+        Self { mode, fields }
     }
 }
 
