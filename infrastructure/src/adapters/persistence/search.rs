@@ -5,6 +5,7 @@ use application::search::query::{
 };
 use application::search::result::{SearchPageResult, SearchPaginationResult};
 use base64::{Engine, engine::general_purpose::URL_SAFE_NO_PAD};
+use futures_util::StreamExt;
 use sea_orm::sea_query::SimpleExpr;
 use sea_orm::{
     ColumnTrait, Condition, DatabaseConnection, EntityTrait, Order, QueryFilter, QueryOrder,
@@ -12,6 +13,7 @@ use sea_orm::{
 };
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use tokio::sync::mpsc::{Receiver, channel};
 
 #[derive(Debug, Clone, Copy)]
 pub struct FieldCapabilities {
@@ -341,10 +343,6 @@ where
         select = select.filter(build_filter_condition::<S>(spec, filtration)?);
     }
 
-    if let Some(cursor) = cursor_filter::<S>(spec, &query.pagination, &effective_sorting)? {
-        select = select.filter(cursor);
-    }
-
     for (field, order) in &effective_sorting {
         let field_def = spec
             .field(*field)
@@ -408,6 +406,80 @@ where
             size,
         },
     })
+}
+
+pub async fn search_stream_with_spec<S>(
+    db: &DatabaseConnection,
+    query: SearchQuery<S::Field>,
+) -> Result<Receiver<Result<S::Result, ServiceError>>, ServiceError>
+where
+    S: SeaOrmSearchSpec + Send + 'static,
+    S::Field: Send + 'static,
+    S::Result: Send + 'static,
+{
+    let spec = S::spec();
+    let effective_sorting = normalize_sorting::<S>(spec, &query.sorting)?;
+    let selected_fields = projection_fields::<S>(spec, &query.projection, &effective_sorting)?;
+    let mut select = S::Entity::find().select_only();
+    for field in &selected_fields {
+        select = select.column_as(field.column, field.field.to_string());
+    }
+
+    if let Some(searching) = &query.searching {
+        select = select.filter(build_search_condition::<S>(spec, searching)?);
+    }
+
+    if let Some(filtration) = &query.filtration {
+        select = select.filter(build_filter_condition::<S>(spec, filtration)?);
+    }
+
+    if let Some(cursor) = cursor_filter::<S>(spec, &query.pagination, &effective_sorting)? {
+        select = select.filter(cursor);
+    }
+
+    for (field, order) in &effective_sorting {
+        let field_def = spec
+            .field(*field)
+            .ok_or_else(|| ServiceError::Validation(format!("Unknown sort field `{field}`.")))?;
+
+        select = select.order_by(field_def.column, order.clone());
+    }
+
+    let (sender, receiver) = channel(32);
+    let db = db.clone();
+
+    tokio::spawn(async move {
+        let result_stream = match select.into_json().stream(&db).await {
+            Ok(stream) => stream,
+            Err(error) => {
+                let _ = sender.send(Err(ServiceError::internal(error))).await;
+                return;
+            }
+        };
+
+        tokio::pin!(result_stream);
+        while let Some(item) = result_stream.next().await {
+            let item = match item {
+                Ok(row) => match serde_json::from_value(row) {
+                    Ok(item) => item,
+                    Err(error) => {
+                        let _ = sender.send(Err(ServiceError::internal(error))).await;
+                        return;
+                    }
+                },
+                Err(error) => {
+                    let _ = sender.send(Err(ServiceError::internal(error))).await;
+                    return;
+                }
+            };
+
+            if sender.send(Ok(item)).await.is_err() {
+                return;
+            }
+        }
+    });
+
+    Ok(receiver)
 }
 
 type EntityFieldDef<E, F> = FieldDef<F, <E as EntityTrait>::Column>;

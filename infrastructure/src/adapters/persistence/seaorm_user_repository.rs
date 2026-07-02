@@ -2,6 +2,7 @@ use crate::adapters::persistence::seaorm::entities::prelude::Users as UserEntity
 use crate::adapters::persistence::seaorm::entities::users;
 use crate::adapters::persistence::seaorm::mappers::user::{to_create_model, to_update_model};
 use crate::adapters::persistence::seaorm::user_search::UserSearchSpec;
+use crate::adapters::persistence::search::search_stream_with_spec;
 use crate::adapters::persistence::search::search_with_spec;
 use application::errors::ServiceError;
 use application::search::query::SearchQuery;
@@ -15,6 +16,7 @@ use domain::user::User;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, DbErr, EntityTrait, QueryFilter, RuntimeErr,
 };
+use tokio::sync::mpsc::{Receiver, channel};
 use uuid::Uuid;
 
 pub struct SeaOrmUserRepositoryAdapter {
@@ -98,6 +100,26 @@ impl SearchRepositoryPort<UserSearchField, UserSearchResult> for SeaOrmUserRepos
         query: SearchQuery<UserSearchField>,
     ) -> Result<SearchPageResult<UserSearchResult>, ServiceError> {
         UserRepositoryPort::search(self, query).await
+    }
+
+    async fn stream(
+        &self,
+        query: SearchQuery<UserSearchField>,
+    ) -> Result<Receiver<Result<UserSearchResult, ServiceError>>, ServiceError> {
+        let rows = search_stream_with_spec::<UserSearchSpec>(&self.db, query).await?;
+        let (sender, receiver) = channel(32);
+
+        tokio::spawn(async move {
+            let mut rows = rows;
+            while let Some(item) = rows.recv().await {
+                let item = item.map(UserSearchResult::from);
+                if sender.send(item).await.is_err() {
+                    return;
+                }
+            }
+        });
+
+        Ok(receiver)
     }
 }
 

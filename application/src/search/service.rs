@@ -6,6 +6,7 @@ use crate::search::repository::SearchRepositoryPort;
 use crate::search::result::SearchPageResult;
 use crate::search::use_case::SearchUseCase;
 use async_trait::async_trait;
+use tokio::sync::mpsc::Receiver;
 
 #[derive(Clone)]
 pub struct SearchService<Q, R> {
@@ -26,5 +27,12 @@ where
 {
     async fn search(&self, query: SearchQuery<Q>) -> Result<SearchPageResult<R>, ServiceError> {
         self.repository.search(query).await
+    }
+
+    async fn stream(
+        &self,
+        query: SearchQuery<Q>,
+    ) -> Result<Receiver<Result<R, ServiceError>>, ServiceError> {
+        self.repository.stream(query).await
     }
 }
