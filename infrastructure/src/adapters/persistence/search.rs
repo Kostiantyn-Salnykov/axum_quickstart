@@ -36,6 +36,20 @@ impl FieldCapabilities {
         }
     }
 
+    pub const fn from_scalar(
+        searchable: bool,
+        sortable: bool,
+        projectable: bool,
+        scalar: ScalarKind,
+    ) -> Self {
+        Self {
+            searchable,
+            sortable,
+            projectable,
+            filter_ops: scalar.filter_ops(),
+        }
+    }
+
     pub fn supports(&self, operator: SearchFilterOperator) -> bool {
         self.filter_ops.contains(&operator)
     }
@@ -54,6 +68,43 @@ pub enum ScalarKind {
 impl ScalarKind {
     fn supports_contains(self) -> bool {
         matches!(self, Self::Text)
+    }
+
+    pub const fn filter_ops(self) -> &'static [SearchFilterOperator] {
+        const TEXT_FILTER_OPS: &[SearchFilterOperator] = &[
+            SearchFilterOperator::Eq,
+            SearchFilterOperator::Ne,
+            SearchFilterOperator::Gt,
+            SearchFilterOperator::Ge,
+            SearchFilterOperator::Lt,
+            SearchFilterOperator::Le,
+            SearchFilterOperator::Contains,
+            SearchFilterOperator::In,
+            SearchFilterOperator::Nin,
+        ];
+        const NUMERIC_FILTER_OPS: &[SearchFilterOperator] = &[
+            SearchFilterOperator::Eq,
+            SearchFilterOperator::Ne,
+            SearchFilterOperator::Gt,
+            SearchFilterOperator::Ge,
+            SearchFilterOperator::Lt,
+            SearchFilterOperator::Le,
+            SearchFilterOperator::In,
+            SearchFilterOperator::Nin,
+        ];
+        const BOOL_FILTER_OPS: &[SearchFilterOperator] = &[
+            SearchFilterOperator::Eq,
+            SearchFilterOperator::Ne,
+            SearchFilterOperator::In,
+            SearchFilterOperator::Nin,
+        ];
+
+        match self {
+            Self::Text => TEXT_FILTER_OPS,
+            Self::Uuid | Self::I64 | Self::DateTime => NUMERIC_FILTER_OPS,
+            Self::Bool => BOOL_FILTER_OPS,
+            Self::PgEnum { .. } => BOOL_FILTER_OPS,
+        }
     }
 }
 
@@ -202,6 +253,68 @@ pub trait SeaOrmSearchSpec {
     type Result: DeserializeOwned;
 
     fn spec() -> &'static EntitySearchSpec<Self::Entity, Self::Field>;
+}
+
+#[macro_export]
+macro_rules! define_entity_search_spec {
+    (
+        spec_type = $spec_type:ident,
+        spec_const = $spec_const:ident,
+        entity = $entity:ty,
+        field = $field:ty,
+        result = $result:ty,
+        tiebreaker = $tiebreaker:expr,
+        default_sort = [ $( ($default_field:expr, $default_order:expr) ),* $(,)? ],
+        fields = [
+            $(
+                {
+                    field = $field_value:expr,
+                    column = $column:expr,
+                    scalar = $scalar:expr,
+                    searchable = $searchable:expr,
+                    sortable = $sortable:expr,
+                    projectable = $projectable:expr,
+                    parse = $parse:expr
+                }
+            ),* $(,)?
+        ]
+    ) => {
+        pub(crate) struct $spec_type;
+
+        const $spec_const: $crate::adapters::persistence::search::EntitySearchSpec<$entity, $field> =
+            $crate::adapters::persistence::search::EntitySearchSpec {
+                fields: &[
+                    $(
+                        $crate::adapters::persistence::search::FieldDef::new(
+                            $field_value,
+                            $column,
+                            $scalar,
+                            $crate::adapters::persistence::search::FieldCapabilities::from_scalar(
+                                $searchable,
+                                $sortable,
+                                $projectable,
+                                $scalar,
+                            ),
+                            $parse,
+                        ),
+                    )*
+                ],
+                tiebreaker: $tiebreaker,
+                default_sort: &[
+                    $(($default_field, $default_order)),*
+                ],
+            };
+
+        impl $crate::adapters::persistence::search::SeaOrmSearchSpec for $spec_type {
+            type Entity = $entity;
+            type Field = $field;
+            type Result = $result;
+
+            fn spec() -> &'static $crate::adapters::persistence::search::EntitySearchSpec<Self::Entity, Self::Field> {
+                &$spec_const
+            }
+        }
+    };
 }
 
 pub async fn search_with_spec<S>(
