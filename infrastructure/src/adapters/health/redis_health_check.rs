@@ -1,7 +1,7 @@
 use application::errors::ServiceError;
 use redis::AsyncCommands;
 
-use crate::adapters::cache::redis_client::RedisClient;
+use crate::adapters::redis::client::RedisClient;
 
 #[derive(Clone)]
 pub struct RedisHealthCheck {

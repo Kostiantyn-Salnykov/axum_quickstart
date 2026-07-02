@@ -22,7 +22,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let app = create_router(state);
 
     tracing::info!(addr = %settings.server_addr(), "Starting HTTP server.");
-    tracing::info!("Connecting to a database.");
 
     let listener = TcpListener::bind(settings.server_addr()).await?;
     axum::serve(

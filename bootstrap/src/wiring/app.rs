@@ -11,7 +11,7 @@ use application::search::repository::SearchRepositoryPort;
 use application::users::search::query::UserSearchField;
 use application::users::search::result::UserSearchResult;
 use infrastructure::adapters;
-use infrastructure::adapters::cache::redis_client::RedisClient;
+use infrastructure::adapters::redis::client::RedisClient;
 use sea_orm::DatabaseConnection;
 
 pub fn build_application_state(
@@ -20,12 +20,10 @@ pub fn build_application_state(
 ) -> Result<AppState, Box<dyn std::error::Error>> {
     let redis_client = RedisClient::new(&settings.redis_url())?;
     let blacklist: Arc<dyn TokenBlacklistPort> = Arc::new(
-        adapters::cache::redis_token_blacklist::RedisTokenBlacklistAdapter::new(
-            redis_client.clone(),
-        ),
+        adapters::redis::token_blacklist::RedisTokenBlacklistAdapter::new(redis_client.clone()),
     );
     let rate_limiter: Arc<dyn RateLimiterPort> = Arc::new(
-        adapters::cache::redis_rate_limiter::RedisRateLimiterAdapter::new(redis_client.clone()),
+        adapters::redis::rate_limiter::RedisRateLimiterAdapter::new(redis_client.clone()),
     );
     let token_manager = Arc::new(
         adapters::security::jwt_token_manager::JwtTokenManagerAdapter::new(

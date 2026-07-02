@@ -9,7 +9,7 @@ use redis::{
     AsyncCommands, ErrorKind, RedisError, ServerErrorKind, aio::ConnectionManager, cmd, pipe,
 };
 
-use crate::adapters::cache::redis_client::RedisClient;
+use crate::adapters::redis::client::RedisClient;
 
 #[derive(Clone)]
 pub struct RedisRateLimiterAdapter {
