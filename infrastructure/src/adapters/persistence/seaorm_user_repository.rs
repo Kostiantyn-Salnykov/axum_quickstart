@@ -58,7 +58,7 @@ impl UserRepositoryPort for SeaOrmUserRepositoryAdapter {
         let page = search_with_spec::<UserSearchSpec>(&self.db, query).await?;
 
         Ok(UserSearchPageResult {
-            items: page.items,
+            items: page.items.into_iter().map(UserSearchResult::from).collect(),
             pagination: page.pagination,
         })
     }

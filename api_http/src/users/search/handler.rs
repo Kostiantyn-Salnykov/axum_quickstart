@@ -4,13 +4,13 @@ use crate::responses::JsendResponse;
 use crate::state::AppState;
 use crate::users::search::request::UserSearchRequest;
 use crate::users::search::response::{UserSearchResponse, stream_line};
+use application::search::query::SearchPagination;
+use async_stream::stream;
 use axum::body::Body;
 use axum::extract::State;
 use axum::http::{HeaderValue, StatusCode, header};
 use axum::response::{IntoResponse, Response};
 use bytes::Bytes;
-use std::convert::Infallible;
-use tokio_stream::iter;
 
 pub async fn search(
     State(state): State<AppState>,
@@ -32,24 +32,46 @@ pub async fn search_stream(
     payload: Result<ContentBody<UserSearchRequest>, crate::content::ContentBodyRejection>,
 ) -> Result<Response, AppError> {
     let ContentBody(payload) = payload.map_err(AppError::from_content_body_rejection)?;
-    let (query, projection) = payload.into_query()?;
-    let result = state.users.search.search(query).await?;
+    let (mut query, projection) = payload.into_query()?;
+    let stream = stream! {
+        loop {
+            let result = match state.users.search.search(query.clone()).await {
+                Ok(result) => result,
+                Err(error) => {
+                    yield Err::<Bytes, AppError>(error.into());
+                    return;
+                }
+            };
 
-    let lines = result
-        .items
-        .into_iter()
-        .map(|item| {
-            stream_line(item, &projection)
-                .map(|line| format!("{line}\n"))
-                .map_err(|error| AppError::Internal(error.into()))
-        })
-        .collect::<Result<Vec<_>, _>>()?;
+            for item in result.items {
+                let line = match stream_line(item, &projection) {
+                    Ok(line) => line,
+                    Err(error) => {
+                        yield Err::<Bytes, AppError>(AppError::Internal(error.into()));
+                        return;
+                    }
+                };
 
-    let stream = iter(
-        lines
-            .into_iter()
-            .map(|line| Ok::<Bytes, Infallible>(Bytes::from(line))),
-    );
+                yield Ok(Bytes::from(format!("{line}\n")));
+            }
+
+            if !result.pagination.has_more {
+                return;
+            }
+
+            let Some(next_cursor) = result.pagination.next_cursor else {
+                tracing::warn!(
+                    "Search stream reported more results without a next cursor. Stopping the stream."
+                );
+                return;
+            };
+
+            query.pagination = SearchPagination::Cursor {
+                cursor: Some(next_cursor),
+                limit: result.pagination.limit,
+            };
+        }
+    };
     let body = Body::from_stream(stream);
 
     Response::builder()
@@ -58,6 +80,7 @@ pub async fn search_stream(
             header::CONTENT_TYPE,
             HeaderValue::from_static("application/x-ndjson; charset=utf-8"),
         )
+        .header(header::CONNECTION, HeaderValue::from_static("close"))
         .body(body)
         .map_err(|error| AppError::Internal(error.into()))
 }

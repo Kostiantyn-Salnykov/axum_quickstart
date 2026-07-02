@@ -1,9 +1,10 @@
+mod result;
 mod values;
 
 use crate::adapters::persistence::seaorm::entities::prelude::Users as UserEntity;
 use crate::adapters::persistence::seaorm::entities::users;
 use application::users::search::query::UserSearchField;
-use application::users::search::result::UserSearchResult;
+pub(crate) use result::UserSearchRow;
 use sea_orm::Order;
 
 crate::define_entity_search_spec! {
@@ -11,7 +12,7 @@ crate::define_entity_search_spec! {
     spec_const = USER_SEARCH_SPEC,
     entity = UserEntity,
     field = UserSearchField,
-    result = UserSearchResult,
+    result = UserSearchRow,
     tiebreaker = UserSearchField::Id,
     default_sort = [(UserSearchField::CreatedAt, Order::Desc)],
     fields = [
