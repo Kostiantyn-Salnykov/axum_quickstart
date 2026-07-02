@@ -2,6 +2,7 @@ mod wiring;
 
 use app_config::Settings;
 use infrastructure::adapters::persistence::seaorm_connection::connect_db;
+use std::net::SocketAddr;
 use tokio::net::TcpListener;
 use tracing_subscriber::{EnvFilter, fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -24,7 +25,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing::info!("Connecting to a database.");
 
     let listener = TcpListener::bind(settings.server_addr()).await?;
-    axum::serve(listener, app).await?;
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await?;
 
     Ok(())
 }

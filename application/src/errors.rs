@@ -1,3 +1,5 @@
+use crate::rate_limit::policy::RateLimitInfo;
+
 #[derive(Debug, thiserror::Error)]
 pub enum ServiceError {
     #[error("Internal error.")]
@@ -14,6 +16,12 @@ pub enum ServiceError {
 
     #[error("Conflict: {0}")]
     Conflict(String),
+
+    #[error("Rate limited: {message}")]
+    RateLimited {
+        info: RateLimitInfo,
+        message: String,
+    },
 
     #[error("Validation failed: {0}")]
     Validation(String),

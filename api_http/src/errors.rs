@@ -1,4 +1,5 @@
 use application::errors::ServiceError;
+use application::rate_limit::policy::RateLimitInfo;
 use axum::extract::rejection::JsonRejection;
 use thiserror::Error;
 
@@ -15,6 +16,12 @@ pub enum AppError {
 
     #[error("Conflict: {0}")]
     Conflict(String),
+
+    #[error("Rate limited: {message}")]
+    RateLimited {
+        info: RateLimitInfo,
+        message: String,
+    },
 
     #[error("Unauthorized")]
     Unauthorized,
@@ -45,6 +52,7 @@ impl From<ServiceError> for AppError {
         match error {
             ServiceError::Validation(message) => Self::Validation(message),
             ServiceError::Conflict(message) => Self::Conflict(message),
+            ServiceError::RateLimited { info, message } => Self::RateLimited { info, message },
             ServiceError::NotFound => Self::NotFound("Resource not found.".to_string()),
             ServiceError::InvalidCredentials => Self::Unauthorized,
             ServiceError::Internal { source } => Self::Internal(source),

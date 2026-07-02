@@ -6,6 +6,7 @@ use crate::wiring::users::{build_get_user_service, build_search_user_service};
 use api_http::state::{AppState, SystemState, UsersState};
 use app_config::Settings;
 use application::auth::token_blacklist_port::TokenBlacklistPort;
+use application::rate_limit::rate_limiter_port::RateLimiterPort;
 use application::search::repository::SearchRepositoryPort;
 use application::users::search::query::UserSearchField;
 use application::users::search::result::UserSearchResult;
@@ -22,6 +23,9 @@ pub fn build_application_state(
         adapters::cache::redis_token_blacklist::RedisTokenBlacklistAdapter::new(
             redis_client.clone(),
         ),
+    );
+    let rate_limiter: Arc<dyn RateLimiterPort> = Arc::new(
+        adapters::cache::redis_rate_limiter::RedisRateLimiterAdapter::new(redis_client.clone()),
     );
     let token_manager = Arc::new(
         adapters::security::jwt_token_manager::JwtTokenManagerAdapter::new(
@@ -58,6 +62,7 @@ pub fn build_application_state(
     let search_user = build_search_user_service(search_users);
 
     Ok(AppState {
+        rate_limiter,
         system: SystemState { health_check },
         auth,
         users: UsersState {

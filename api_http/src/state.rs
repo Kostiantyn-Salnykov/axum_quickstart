@@ -3,6 +3,7 @@ use application::auth::logout::use_case::LogoutUseCase;
 use application::auth::refresh::use_case::RefreshUseCase;
 use application::auth::register::use_case::RegisterUseCase;
 use application::auth::verify_access_token::use_case::VerifyAccessTokenUseCase;
+use application::rate_limit::rate_limiter_port::RateLimiterPort;
 use application::search::use_case::SearchUseCase;
 use application::system::health_check::use_case::HealthCheckUseCase;
 use application::users::get::use_case::GetUserUseCase;
@@ -32,6 +33,7 @@ pub struct UsersState {
 
 #[derive(Clone)]
 pub struct AppState {
+    pub rate_limiter: Arc<dyn RateLimiterPort>,
     pub system: SystemState,
     pub auth: AuthState,
     pub users: UsersState,
