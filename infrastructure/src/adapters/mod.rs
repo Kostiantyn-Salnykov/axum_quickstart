@@ -1,3 +1,4 @@
+pub mod authorization;
 pub mod health;
 pub mod persistence;
 pub mod redis;

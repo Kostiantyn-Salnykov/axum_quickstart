@@ -4,6 +4,10 @@
 
 Rename example.env to .env and fill in the values.
 
+## Documentation
+
+- [Authorization / Casbin module guide](docs/authorization.md)
+
 ### Main commands:
 📚List all available commands:
 ```shell

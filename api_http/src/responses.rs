@@ -66,6 +66,12 @@ impl IntoResponse for AppError {
                 "Unauthorized".to_string(),
                 None,
             ),
+            AppError::Forbidden => (
+                StatusCode::FORBIDDEN,
+                JsendStatus::Fail,
+                "Forbidden".to_string(),
+                None,
+            ),
             AppError::Internal(error) => {
                 tracing::error!(error = ?error, "Unhandled internal application error.");
                 (

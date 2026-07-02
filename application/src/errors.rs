@@ -14,6 +14,9 @@ pub enum ServiceError {
     #[error("Invalid credentials")]
     InvalidCredentials,
 
+    #[error("Forbidden")]
+    Forbidden,
+
     #[error("Conflict: {0}")]
     Conflict(String),
 

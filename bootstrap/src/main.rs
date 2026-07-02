@@ -18,7 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         tracing::info!("{:#?}", settings);
     }
     let db = connect_db(&settings.database_url()).await?;
-    let state = build_application_state(&settings, db)?;
+    let state = build_application_state(&settings, db).await?;
     let app = create_router(state);
 
     tracing::info!(addr = %settings.server_addr(), "Starting HTTP server.");

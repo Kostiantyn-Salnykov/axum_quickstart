@@ -26,6 +26,9 @@ pub enum AppError {
     #[error("Unauthorized")]
     Unauthorized,
 
+    #[error("Forbidden")]
+    Forbidden,
+
     #[error("Internal server error")]
     Internal(#[from] anyhow::Error),
 }
@@ -55,6 +58,7 @@ impl From<ServiceError> for AppError {
             ServiceError::RateLimited { info, message } => Self::RateLimited { info, message },
             ServiceError::NotFound => Self::NotFound("Resource not found.".to_string()),
             ServiceError::InvalidCredentials => Self::Unauthorized,
+            ServiceError::Forbidden => Self::Forbidden,
             ServiceError::Internal { source } => Self::Internal(source),
         }
     }

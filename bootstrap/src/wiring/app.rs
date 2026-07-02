@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::wiring::auth::build_auth_services;
+use crate::wiring::authorization::build_authorization_services;
 use crate::wiring::system::build_health_check_service;
 use crate::wiring::users::{build_get_user_service, build_search_user_service};
 use api_http::state::{AppState, SystemState, UsersState};
@@ -14,7 +15,7 @@ use infrastructure::adapters;
 use infrastructure::adapters::redis::client::RedisClient;
 use sea_orm::DatabaseConnection;
 
-pub fn build_application_state(
+pub async fn build_application_state(
     settings: &Settings,
     db: DatabaseConnection,
 ) -> Result<AppState, Box<dyn std::error::Error>> {
@@ -36,7 +37,7 @@ pub fn build_application_state(
     let health_provider = Arc::new(
         adapters::health::combined_health_check::CompositeHealthCheck::new(
             adapters::health::database_health_check::SeaOrmDatabaseHealthCheck::new(db.clone()),
-            adapters::health::redis_health_check::RedisHealthCheck::new(redis_client),
+            adapters::health::redis_health_check::RedisHealthCheck::new(redis_client.clone()),
         ),
     );
     let users_repo = Arc::new(
@@ -52,6 +53,7 @@ pub fn build_application_state(
         token_manager.clone(),
         blacklist,
     );
+    let authorization = build_authorization_services(redis_client.clone()).await;
     let auth_users: Arc<dyn application::users::user_repository_port::UserRepositoryPort> =
         users_repo.clone();
     let search_users: Arc<dyn SearchRepositoryPort<UserSearchField, UserSearchResult>> =
@@ -63,6 +65,7 @@ pub fn build_application_state(
         rate_limiter,
         system: SystemState { health_check },
         auth,
+        authorization,
         users: UsersState {
             get: get_user,
             search: search_user,
